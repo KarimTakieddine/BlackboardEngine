@@ -1,0 +1,17 @@
+**/Debug/
+
+**/*.db
+**/*.idb
+**/*.iobj
+**/*.ipch
+**/*.ipdb
+**/*.lastbuildstate
+**/*.obj
+**/*.opendb
+**/*.pch
+**/*.pdb
+**/*.suo
+**/*.user
+
+**/*.log
+**/*.tlog
