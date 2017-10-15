@@ -1,13 +1,15 @@
 #include "stdafx.h"
 
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 enum ErrorCode
 {
-	ERROR_SUCCESS, 
+	ERROR_SUCCESS,
 	ERROR_GLFW_INIT,
 	ERROR_WND_INIT,
-	ERROR_GLEW_INIT
+	ERROR_GLEW_INIT,
+	ERROR_SHD_COMPILE,
+	ERROR_SHD_PROGRAM_LINK
 };
 
 static void OnWindowResized(int width, int height, GLFWwindow * window)
@@ -36,10 +38,38 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
+	glewExperimental = GL_TRUE;
+
 	if (glewInit() != GLEW_OK)
 	{
 		return ERROR_GLEW_INIT;
 	}
+
+	Shader vertexShader(GL_VERTEX_SHADER);
+	vertexShader.loadFile(".\\shaders\\vertex.shd");
+
+	if (!vertexShader.isCompiled())
+	{
+		return ERROR_SHD_COMPILE;
+	}
+
+	Shader fragmentShader(GL_FRAGMENT_SHADER);
+	fragmentShader.loadFile(".\\shaders\\fragment.shd");
+
+	if (!fragmentShader.isCompiled())
+	{
+		return ERROR_SHD_COMPILE;
+	}
+
+	ShaderProgram shaderProgram;
+	shaderProgram.attachShader(vertexShader).attachShader(fragmentShader).link();
+
+	if (!shaderProgram.isLinked())
+	{
+		return ERROR_SHD_PROGRAM_LINK;
+	}
+
+	shaderProgram.use();
 
 	while (!glfwWindowShouldClose(window))
 	{
