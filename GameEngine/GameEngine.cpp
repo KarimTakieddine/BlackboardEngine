@@ -12,7 +12,7 @@ enum ErrorCode
 	ERROR_SHD_PROGRAM_LINK
 };
 
-static void OnWindowResized(int width, int height, GLFWwindow * window)
+static void OnWindowResized(GLFWwindow * window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
@@ -36,10 +36,10 @@ int main()
 		return ERROR_WND_INIT;
 	}
 
+	glfwSetWindowSizeCallback(window, OnWindowResized);
 	glfwMakeContextCurrent(window);
 
 	glewExperimental = GL_TRUE;
-
 	if (glewInit() != GLEW_OK)
 	{
 		return ERROR_GLEW_INIT;
@@ -71,10 +71,37 @@ int main()
 
 	shaderProgram.use();
 
+	GLfloat const vertices[18] =
+	{
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	GLuint vertexArray;
+	glGenVertexArrays(1, &vertexArray);
+
+	GLuint vertexBuffer;
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(vertexArray);
+
+	GLint positionAttribute = glGetAttribLocation(shaderProgram.getIndex(), "position");
+	glEnableVertexAttribArray(positionAttribute);
+	glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
+
+	GLint colorAttribute = glGetAttribLocation(shaderProgram.getIndex(), "color");
+	glEnableVertexAttribArray(colorAttribute);
+	glVertexAttribPointer(colorAttribute, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void const *>(3 * sizeof(GLfloat)));
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
