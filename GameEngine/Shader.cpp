@@ -20,12 +20,26 @@ m_sourceLength()
 Shader::Shader(Shader const & other)
 :
 m_type(other.m_type),
-m_index(glCreateShader(m_type)),
-m_sourceLength(other.m_sourceLength)
+m_index(glCreateShader(m_type))
 {
+	copy(other);
+}
+
+Shader & Shader::copy(Shader const & other)
+{
+	m_sourceLength = other.m_sourceLength;
 	std::vector<GLchar> buffer(m_sourceLength);
 	glGetShaderSource(other.m_index, m_sourceLength, nullptr, &buffer[0]);
-	compile(buffer.data());
+
+	return compile(buffer.data());
+}
+
+Shader & Shader::operator=(Shader const & other)
+{
+	m_type = other.m_type;
+	m_index = glCreateShader(m_type);
+
+	return copy(other);
 }
 
 Shader & Shader::compile(GLchar const * buffer)

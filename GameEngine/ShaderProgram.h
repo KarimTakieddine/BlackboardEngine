@@ -11,7 +11,11 @@ public:
 
 	ShaderProgram(ShaderProgram const & other);
 
+	ShaderProgram & operator=(ShaderProgram const & other);
+
 	ShaderProgram & attachShader(Shader const & shader);
+
+	ShaderProgram & copy(ShaderProgram const & other);
 
 	GLboolean detachShader(Shader const & shader);
 

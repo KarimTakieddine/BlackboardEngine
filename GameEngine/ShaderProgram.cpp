@@ -14,18 +14,33 @@ m_shaderList(),
 m_index(glCreateProgram()),
 m_linkStatus()
 {
-	for (std::vector<Shader const *>::const_iterator i = other.m_shaderList.begin(); i != other.m_shaderList.end(); ++i)
-	{
-		attachShader(*(*i));
-	}
+	copy(other);
+}
 
-	link();
+ShaderProgram & ShaderProgram::operator=(ShaderProgram const & other)
+{
+	m_shaderList = std::vector<Shader const *>();
+	m_index = glCreateProgram();
+
+	return copy(other);
 }
 
 ShaderProgram & ShaderProgram::attachShader(Shader const & shader)
 {
 	glAttachShader(m_index, shader.getIndex());
 	m_shaderList.push_back(&shader);
+	return *this;
+}
+
+ShaderProgram & ShaderProgram::copy(ShaderProgram const & other)
+{
+	for (std::vector<Shader const *>::const_iterator i = other.m_shaderList.begin(); i != other.m_shaderList.end(); ++i)
+	{
+		attachShader(*(*i));
+	}
+
+	link();
+
 	return *this;
 }
 

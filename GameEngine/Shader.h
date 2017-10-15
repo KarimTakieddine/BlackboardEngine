@@ -12,7 +12,11 @@ public:
 
 	explicit Shader(GLenum type);
 
-	Shader(Shader const & shader);
+	Shader(Shader const & other);
+
+	Shader & operator=(Shader const & other);
+
+	Shader & copy(Shader const & other);
 
 	Shader & compile(GLchar const * source);
 
