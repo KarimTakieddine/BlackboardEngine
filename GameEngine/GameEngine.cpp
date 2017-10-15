@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "File.h"
+
 enum ErrorCode
 {
 	ERROR_SUCCESS, 
