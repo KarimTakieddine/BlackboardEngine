@@ -1,5 +1,7 @@
 **/Debug/
 
+**/*.lib
+
 **/*.db
 **/*.idb
 **/*.iobj
