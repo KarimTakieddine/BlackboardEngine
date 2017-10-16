@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 
+#include "BufferData.hpp"
 #include "ShaderProgram.h"
 #include "VertexAttribute.h"
 
@@ -12,9 +13,20 @@ public:
 
 	static void copyBufferData(GLuint source, GLuint destination, GLsizeiptr size);
 
+	template<typename T>
+	static void bindBufferData(GLuint bufferIndex, BufferData<T> const & bufferData)
+	{
+		GLenum targetBuffer = bufferData.target;
+
+		//TODO: Implement lazy binding semantics
+
+		glBindBuffer(targetBuffer, bufferIndex);
+		glBufferData(targetBuffer, bufferData.size, bufferData.data, bufferData.usage);
+	}
+
 	Mesh();
 
-	Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program);
+	explicit Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program);
 
 	Mesh(Mesh const & other);
 

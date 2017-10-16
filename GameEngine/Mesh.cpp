@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Mesh.h"
+#include "Mesh.hpp"
 
 void Mesh::copyBufferData(GLuint source, GLuint destination, GLsizeiptr size)
 {

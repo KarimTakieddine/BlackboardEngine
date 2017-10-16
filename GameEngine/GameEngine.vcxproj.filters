@@ -33,10 +33,13 @@
     <ClInclude Include="BufferAttribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
+    <ClInclude Include="VertexAttribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VertexAttribute.h">
+    <ClInclude Include="BufferData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
