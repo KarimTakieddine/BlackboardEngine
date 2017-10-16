@@ -33,7 +33,10 @@
     <ClInclude Include="BufferAttribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderMemory.h">
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexAttribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,10 +56,13 @@
     <ClCompile Include="ShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderMemory.cpp">
+    <ClCompile Include="BufferAttribute.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BufferAttribute.cpp">
+    <ClCompile Include="VertexAttribute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
