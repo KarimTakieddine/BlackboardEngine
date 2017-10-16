@@ -11,6 +11,10 @@ class Mesh
 
 public:
 
+	static GLboolean isBoundToState(GLuint index, GLenum binding);
+
+	static GLboolean isBufferBoundToState(GLuint bufferIndex, GLenum target);
+
 	static GLboolean copyBufferData(GLuint source, GLuint destination, GLsizeiptr size);
 
 	template<typename T>
@@ -18,9 +22,11 @@ public:
 	{
 		GLenum targetBuffer = bufferData.target;
 
-		//TODO: Implement lazy binding semantics
+		if (!isBufferBoundToState(bufferIndex, targetBuffer))
+		{
+			glBindBuffer(targetBuffer, bufferIndex);
+		}
 
-		glBindBuffer(targetBuffer, bufferIndex);
 		glBufferData(targetBuffer, bufferData.size, bufferData.data, bufferData.usage);
 	}
 

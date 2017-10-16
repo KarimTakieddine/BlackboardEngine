@@ -161,6 +161,7 @@
     <ClInclude Include="BufferData.hpp" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="StateConstants.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="VertexAttribute.h" />
     <ClInclude Include="Shader.h" />
@@ -173,6 +174,7 @@
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="StateConstants.cpp" />
     <ClCompile Include="VertexAttribute.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="stdafx.cpp">

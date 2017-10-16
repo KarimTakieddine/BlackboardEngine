@@ -1,5 +1,26 @@
 #include "stdafx.h"
 #include "Mesh.hpp"
+#include "StateConstants.h"
+
+GLboolean Mesh::isBoundToState(GLuint index, GLenum binding)
+{
+	GLint currentIndex;
+	glGetIntegerv(binding, &currentIndex);
+
+	return index == currentIndex;
+}
+
+GLboolean Mesh::isBufferBoundToState(GLuint bufferIndex, GLenum target)
+{
+	std::map<GLenum, GLenum>::const_iterator i = StateConstants::BufferTargetBindingMap.find(target);
+
+	if (i == StateConstants::BufferTargetBindingMap.end())
+	{
+		return GL_FALSE;
+	}
+
+	return isBoundToState(bufferIndex, i->second);
+}
 
 GLboolean Mesh::copyBufferData(GLuint source, GLuint destination, GLsizeiptr size)
 {
@@ -106,19 +127,22 @@ Mesh & Mesh::bindVertexData(BufferData<GLfloat> const & vertexData)
 
 GLboolean Mesh::bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const
 {
-	//TODO: Lazy bind vertex array
-
-	glBindVertexArray(m_vertexArrayIndex);
+	if (!isBoundToState(m_vertexArrayIndex, GL_VERTEX_ARRAY_BINDING))
+	{
+		glBindVertexArray(m_vertexArrayIndex);
+	}
 
 	return attribute.bind(normalized);
 }
 
 void Mesh::render() const
 {
-	//TODO: Lazy bind vertex array
-
 	m_shaderProgram->use();
-	glBindVertexArray(m_vertexArrayIndex);
+
+	if (!isBoundToState(m_vertexArrayIndex, GL_VERTEX_ARRAY_BINDING))
+	{
+		glBindVertexArray(m_vertexArrayIndex);
+	}
 
 	draw();
 }
