@@ -11,7 +11,7 @@ class Mesh
 
 public:
 
-	static void copyBufferData(GLuint source, GLuint destination, GLsizeiptr size);
+	static GLboolean copyBufferData(GLuint source, GLuint destination, GLsizeiptr size);
 
 	template<typename T>
 	static void bindBufferData(GLuint bufferIndex, BufferData<T> const & bufferData)
@@ -26,6 +26,8 @@ public:
 
 	Mesh();
 
+	explicit Mesh(ShaderProgram const & program);
+
 	explicit Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program);
 
 	Mesh(Mesh const & other);
@@ -34,14 +36,24 @@ public:
 
 	Mesh & copy(Mesh const & other);
 
+	Mesh & bindVertexData(BufferData<GLfloat> const & vertexData);
+
+	Mesh & bindElementData(BufferData<GLuint> const & elementData);
+
 	GLboolean bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const;
 
+	void render() const;
+
 	~Mesh();
+
+protected:
+
+	virtual void draw() const { glDrawArrays(GL_TRIANGLES, 0, 3); } // = 0;
 
 private:
 
 	ShaderProgram const * m_shaderProgram;
-	GLsizeiptr m_vertexBufferSize, m_elementBufferSize;
+	GLsizeiptr m_vertexBufferSize, m_elementBufferSize, m_textureBufferSize;
 	GLuint m_vertexArrayIndex, m_vertexBufferIndex, m_elementBufferIndex, m_textureBufferIndex;
 
 };

@@ -1,16 +1,39 @@
 #include "stdafx.h"
 #include "Mesh.hpp"
 
-void Mesh::copyBufferData(GLuint source, GLuint destination, GLsizeiptr size)
+GLboolean Mesh::copyBufferData(GLuint source, GLuint destination, GLsizeiptr size)
 {
+	if (size == 0)
+	{
+		return GL_FALSE;
+	}
+
 	glBindBuffer(GL_COPY_READ_BUFFER, source);
 	glBindBuffer(GL_COPY_WRITE_BUFFER, destination);
 	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, size);
+
+	return GL_TRUE;
 }
 
 Mesh::Mesh()
 :
-m_shaderProgram(nullptr)
+m_shaderProgram(nullptr),
+m_vertexBufferSize(),
+m_elementBufferSize(),
+m_textureBufferSize()
+{
+	glGenVertexArrays(1, &m_vertexArrayIndex);
+	glGenBuffers(1, &m_vertexBufferIndex);
+	glGenBuffers(1, &m_elementBufferIndex);
+	glGenTextures(1, &m_textureBufferIndex);
+}
+
+Mesh::Mesh(ShaderProgram const & program)
+:
+m_shaderProgram(&program),
+m_vertexBufferSize(),
+m_elementBufferSize(),
+m_textureBufferSize()
 {
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
@@ -21,6 +44,9 @@ m_shaderProgram(nullptr)
 Mesh::Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program)
 :
 m_shaderProgram(&program),
+m_vertexBufferSize(),
+m_elementBufferSize(),
+m_textureBufferSize(),
 m_vertexArrayIndex(vertexArrayIndex),
 m_vertexBufferIndex(vertexBufferIndex),
 m_elementBufferIndex(elementBufferIndex),
@@ -29,7 +55,10 @@ m_textureBufferIndex(textureBufferIndex)
 
 Mesh::Mesh(Mesh const & other)
 :
-m_shaderProgram(other.m_shaderProgram)
+m_shaderProgram(other.m_shaderProgram),
+m_vertexBufferSize(other.m_vertexBufferSize),
+m_elementBufferSize(other.m_elementBufferSize),
+m_textureBufferSize(other.m_textureBufferSize)
 {
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
@@ -42,6 +71,10 @@ m_shaderProgram(other.m_shaderProgram)
 Mesh & Mesh::operator=(Mesh const & other)
 {
 	m_shaderProgram = other.m_shaderProgram;
+
+	m_vertexBufferSize = other.m_vertexBufferSize,
+	m_elementBufferSize = other.m_elementBufferSize;
+	m_textureBufferSize = other.m_textureBufferSize;
 
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
@@ -62,9 +95,32 @@ Mesh & Mesh::copy(Mesh const & other)
 	return *this;
 }
 
+Mesh & Mesh::bindVertexData(BufferData<GLfloat> const & vertexData)
+{
+	m_vertexBufferSize = vertexData.size;
+
+	bindBufferData<GLfloat>(m_vertexBufferIndex, vertexData);
+
+	return *this;
+}
+
 GLboolean Mesh::bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const
 {
+	//TODO: Lazy bind vertex array
+
+	glBindVertexArray(m_vertexArrayIndex);
+
 	return attribute.bind(normalized);
+}
+
+void Mesh::render() const
+{
+	//TODO: Lazy bind vertex array
+
+	m_shaderProgram->use();
+	glBindVertexArray(m_vertexArrayIndex);
+
+	draw();
 }
 
 Mesh::~Mesh()

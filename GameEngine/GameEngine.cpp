@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "ShaderMemory.h"
+#include "Triangle.h"
 
 enum ErrorCode
 {
@@ -78,30 +78,28 @@ int main()
 		0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
 	};
 
-	GLuint vertexArray;
-	glGenVertexArrays(1, &vertexArray);
+	BufferData<GLfloat> vertexBufferData(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices, sizeof(vertices));
 
-	GLuint vertexBuffer;
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	Mesh mesh(shaderProgram);
+	mesh.bindVertexData(vertexBufferData);
 
-	glBindVertexArray(vertexArray);
+	VertexAttribute positionAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 6 * sizeof(GLfloat)), shaderProgram);
+	mesh.bindVertexAttribute(GL_FALSE, positionAttribute);
 
-	ShaderMemory positionMemory("position", BufferAttribute(GL_FLOAT, 3, 0, 6 * sizeof(GLfloat)), shaderProgram);
-	glEnableVertexAttribArray(positionMemory.getLocation());
-	glVertexAttribPointer(positionMemory.getLocation(), positionMemory.bufferAttribute.count, positionMemory.bufferAttribute.type, GL_FALSE, positionMemory.bufferAttribute.stride, (void*)positionMemory.bufferAttribute.offset);
+	VertexAttribute colorAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat)), shaderProgram);
+	mesh.bindVertexAttribute(GL_FALSE, colorAttribute);
 
-	GLint colorAttribute = glGetAttribLocation(shaderProgram.getIndex(), "color");
-	glEnableVertexAttribArray(colorAttribute);
-	glVertexAttribPointer(colorAttribute, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void const *>(3 * sizeof(GLfloat)));
+	Mesh mesh_2(mesh);
+	mesh_2.bindVertexAttribute(GL_FALSE, positionAttribute);
+	mesh_2.bindVertexAttribute(GL_FALSE, colorAttribute);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//mesh.render();
+		mesh_2.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
