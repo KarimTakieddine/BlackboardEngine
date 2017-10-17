@@ -163,6 +163,7 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="StateConstants.h" />
+    <ClInclude Include="TransformUniform.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Uniform.h" />
     <ClInclude Include="VertexAttribute.h" />
@@ -177,6 +178,8 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StateConstants.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TransformUniform.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="Uniform.cpp" />
     <ClCompile Include="VertexAttribute.cpp" />

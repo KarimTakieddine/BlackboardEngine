@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 #include "BufferData.hpp"
-#include "ShaderProgram.h"
+#include "TransformUniform.h"
 #include "VertexAttribute.h"
 
 class Mesh
@@ -48,6 +48,8 @@ public:
 
 	GLboolean bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const;
 
+	void initializeTransformUniform(GLchar const * name);
+
 	void render();
 
 	virtual void initialize() = 0;
@@ -57,7 +59,8 @@ public:
 protected:
 
 	virtual void draw() = 0;
-
+	
+	TransformUniform m_transformUniform;
 	ShaderProgram const * m_shaderProgram;
 	GLsizeiptr m_vertexBufferSize, m_elementBufferSize, m_textureBufferSize;
 	GLuint m_vertexArrayIndex, m_vertexBufferIndex, m_elementBufferIndex, m_textureBufferIndex;

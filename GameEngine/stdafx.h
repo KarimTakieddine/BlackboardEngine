@@ -18,5 +18,5 @@ typedef glm::vec2 VEC2;
 typedef glm::vec3 VEC3;
 typedef glm::vec4 VEC4;
 typedef glm::mat2 MAT2;
-typedef glm::mat2 MAT3;
-typedef glm::mat2 MAT4;
+typedef glm::mat3 MAT3;
+typedef glm::mat4 MAT4;
