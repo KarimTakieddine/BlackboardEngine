@@ -69,37 +69,16 @@ int main()
 		return ERROR_SHD_PROGRAM_LINK;
 	}
 
-	shaderProgram.use();
+	Triangle triangle(shaderProgram);
 
-	GLfloat const vertices[18] =
-	{
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
-	};
-
-	BufferData<GLfloat> vertexBufferData(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices, sizeof(vertices));
-
-	Mesh mesh(shaderProgram);
-	mesh.bindVertexData(vertexBufferData);
-
-	VertexAttribute positionAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 6 * sizeof(GLfloat)), shaderProgram);
-	mesh.bindVertexAttribute(GL_FALSE, positionAttribute);
-
-	VertexAttribute colorAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat)), shaderProgram);
-	mesh.bindVertexAttribute(GL_FALSE, colorAttribute);
-
-	Mesh mesh_2(mesh);
-	mesh_2.bindVertexAttribute(GL_FALSE, positionAttribute);
-	mesh_2.bindVertexAttribute(GL_FALSE, colorAttribute);
+	triangle.initialize();
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		//mesh.render();
-		mesh_2.render();
+		triangle.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

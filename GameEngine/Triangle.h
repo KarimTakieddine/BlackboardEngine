@@ -5,6 +5,20 @@
 class Triangle : public Mesh
 {
 
-	//TODO: Provide implementation
+public:
+
+	Triangle();
+
+	explicit Triangle(ShaderProgram const & program);
+
+	explicit Triangle(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program);
+
+	Triangle(Triangle const & other);
+
+	void initialize() override;
+
+protected:
+
+	void draw() override;
 
 };

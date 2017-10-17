@@ -135,7 +135,7 @@ GLboolean Mesh::bindVertexAttribute(GLboolean normalized, VertexAttribute const 
 	return attribute.bind(normalized);
 }
 
-void Mesh::render() const
+void Mesh::render()
 {
 	m_shaderProgram->use();
 

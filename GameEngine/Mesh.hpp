@@ -48,15 +48,15 @@ public:
 
 	GLboolean bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const;
 
-	void render() const;
+	void render();
 
-	~Mesh();
+	virtual void initialize() = 0;
+
+	virtual ~Mesh();
 
 protected:
 
-	virtual void draw() const { glDrawArrays(GL_TRIANGLES, 0, 3); } // = 0;
-
-private:
+	virtual void draw() = 0;
 
 	ShaderProgram const * m_shaderProgram;
 	GLsizeiptr m_vertexBufferSize, m_elementBufferSize, m_textureBufferSize;
