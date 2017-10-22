@@ -3,6 +3,8 @@
 #include "stdafx.h"
 
 #include "BufferData.hpp"
+#include "ImageBuffer.h"
+#include "Texture.h"
 #include "TransformUniform.h"
 #include "VertexAttribute.h"
 
@@ -34,7 +36,7 @@ public:
 
 	explicit Mesh(ShaderProgram const & program);
 
-	explicit Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program);
+	explicit Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureIndex, ShaderProgram const & program);
 
 	Mesh(Mesh const & other);
 
@@ -45,6 +47,8 @@ public:
 	Mesh & bindVertexData(BufferData<GLfloat> const & vertexData);
 
 	Mesh & bindElementData(BufferData<GLuint> const & elementData);
+
+	GLboolean loadTextureFile(GLchar const * filename, Texture const & texture);
 
 	GLboolean bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const;
 
@@ -64,6 +68,6 @@ protected:
 	TransformUniform m_transformUniform;
 	ShaderProgram const * m_shaderProgram;
 	GLsizeiptr m_vertexBufferSize, m_elementBufferSize, m_textureBufferSize;
-	GLuint m_vertexArrayIndex, m_vertexBufferIndex, m_elementBufferIndex, m_textureBufferIndex;
+	GLuint m_vertexArrayIndex, m_vertexBufferIndex, m_elementBufferIndex, m_textureIndex;
 
 };

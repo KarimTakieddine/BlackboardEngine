@@ -12,9 +12,9 @@ GLboolean Mesh::isBoundToState(GLuint index, GLenum binding)
 
 GLboolean Mesh::isBufferBoundToState(GLuint bufferIndex, GLenum target)
 {
-	std::map<GLenum, GLenum>::const_iterator i = StateConstants::BufferTargetBindingMap.find(target);
+	std::map<GLenum, GLenum>::const_iterator i = StateConstants::TargetToBindingLookupMap.find(target);
 
-	if (i == StateConstants::BufferTargetBindingMap.end())
+	if (i == StateConstants::TargetToBindingLookupMap.end())
 	{
 		return GL_FALSE;
 	}
@@ -47,7 +47,7 @@ m_textureBufferSize()
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
 	glGenBuffers(1, &m_elementBufferIndex);
-	glGenTextures(1, &m_textureBufferIndex);
+	glGenTextures(1, &m_textureIndex);
 }
 
 Mesh::Mesh(ShaderProgram const & program)
@@ -61,10 +61,10 @@ m_textureBufferSize()
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
 	glGenBuffers(1, &m_elementBufferIndex);
-	glGenTextures(1, &m_textureBufferIndex);
+	glGenTextures(1, &m_textureIndex);
 }
 
-Mesh::Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program)
+Mesh::Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureIndex, ShaderProgram const & program)
 :
 m_transformUniform(),
 m_shaderProgram(&program),
@@ -74,7 +74,7 @@ m_textureBufferSize(),
 m_vertexArrayIndex(vertexArrayIndex),
 m_vertexBufferIndex(vertexBufferIndex),
 m_elementBufferIndex(elementBufferIndex),
-m_textureBufferIndex(textureBufferIndex)
+m_textureIndex(textureIndex)
 { }
 
 Mesh::Mesh(Mesh const & other)
@@ -88,7 +88,7 @@ m_textureBufferSize(other.m_textureBufferSize)
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
 	glGenBuffers(1, &m_elementBufferIndex);
-	glGenTextures(1, &m_textureBufferIndex);
+	glGenTextures(1, &m_textureIndex);
 
 	copy(other);
 }
@@ -105,7 +105,7 @@ Mesh & Mesh::operator=(Mesh const & other)
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
 	glGenBuffers(1, &m_elementBufferIndex);
-	glGenTextures(1, &m_textureBufferIndex);
+	glGenTextures(1, &m_textureIndex);
 
 	return copy(other);
 }
@@ -137,6 +137,40 @@ Mesh & Mesh::bindElementData(BufferData<GLuint> const & elementData)
 	bindBufferData<GLuint>(m_elementBufferIndex, elementData);
 
 	return *this;
+}
+
+GLboolean Mesh::loadTextureFile(GLchar const * filename, Texture const & texture)
+{
+	ImageBuffer buffer;
+
+	if (!buffer.load(filename))
+	{
+		return GL_FALSE;
+	}
+
+	m_textureBufferSize = buffer.getWidth() * buffer.getHeight() * 3;
+
+	if (m_textureBufferSize == 0)
+	{
+		return GL_FALSE;
+	}
+
+	GLenum target = texture.targetBinding;
+
+	if (!isBoundToState(m_textureIndex, target))
+	{
+		glBindTexture(target, m_textureIndex);
+	}
+
+	glTexImage2D(target, 0, GL_RGB, buffer.getWidth(), buffer.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer.getData());
+
+	glTexParameteri(target, GL_TEXTURE_WRAP_S, texture.horizontalWrapMode);
+	glTexParameteri(target, GL_TEXTURE_WRAP_T, texture.verticalWrapMode);
+	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, texture.minimizeFilter);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, texture.magnifyFilter);
+	glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(texture.borderColor));
+
+	return GL_TRUE;
 }
 
 GLboolean Mesh::bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const
@@ -172,7 +206,7 @@ void Mesh::render()
 
 Mesh::~Mesh()
 {
-	glDeleteTextures(1, &m_textureBufferIndex);
+	glDeleteTextures(1, &m_textureIndex);
 	glDeleteBuffers(1, &m_elementBufferIndex);
 	glDeleteBuffers(1, &m_vertexBufferIndex);
 	glDeleteVertexArrays(1, &m_vertexArrayIndex);

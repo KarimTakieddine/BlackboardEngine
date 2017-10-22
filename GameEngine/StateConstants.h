@@ -7,6 +7,6 @@ class StateConstants
 
 public:
 
-	static const std::map<GLenum, GLenum> BufferTargetBindingMap;
+	static const std::map<GLenum, GLenum> TargetToBindingLookupMap;
 
 };

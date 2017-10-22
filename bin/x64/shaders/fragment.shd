@@ -1,9 +1,12 @@
 #version 440 core
 
 in vec3 vertexColor;
+in vec2 samplerCoordinates;
 out vec4 fragmentColor;
+
+uniform sampler2D sampler;
 
 void main()
 {
-	fragmentColor = vec4(vertexColor, 1.0);
+	fragmentColor = texture2D(sampler, samplerCoordinates) * vec4(vertexColor, 1.0);
 }

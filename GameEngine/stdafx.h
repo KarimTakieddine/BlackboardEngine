@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -12,6 +13,8 @@
 #include "glm\matrix.hpp"
 #include "glm\gtx\transform.hpp"
 #include "glm\gtc\type_ptr.hpp"
+
+#include "SOIL\SOIL.h"
 
 #define GLM_FORCE_RADIANS
 

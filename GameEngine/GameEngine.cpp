@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "ImageBuffer.h"
 #include "Quad.h"
 #include "Triangle.h"
 
@@ -78,6 +79,7 @@ int main()
 	Quad quad(shaderProgram);
 
 	quad.initialize();
+	quad.loadTextureFile(".\\resources\\cat.png", Texture());
 
 	MAT4 view = glm::lookAt
 	(
