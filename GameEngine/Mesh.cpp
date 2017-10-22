@@ -154,9 +154,11 @@ void Mesh::render()
 		glBindVertexArray(m_vertexArrayIndex);
 	}
 
+	draw();
+
 	m_transformUniform.doBinding();
 
-	draw();
+	update();
 }
 
 Mesh::~Mesh()

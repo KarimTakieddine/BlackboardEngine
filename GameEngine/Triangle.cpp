@@ -47,3 +47,8 @@ void Triangle::draw()
 {
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
+
+void Triangle::update()
+{
+
+}

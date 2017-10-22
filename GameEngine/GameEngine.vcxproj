@@ -160,6 +160,7 @@
     <ClInclude Include="BufferAttribute.h" />
     <ClInclude Include="BufferData.hpp" />
     <ClInclude Include="File.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="StateConstants.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StateConstants.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TransformUniform.cpp" />
     <ClCompile Include="Triangle.cpp" />

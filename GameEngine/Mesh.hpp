@@ -59,6 +59,7 @@ public:
 protected:
 
 	virtual void draw() = 0;
+	virtual void update() = 0;
 	
 	TransformUniform m_transformUniform;
 	ShaderProgram const * m_shaderProgram;

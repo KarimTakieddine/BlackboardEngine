@@ -21,4 +21,6 @@ protected:
 
 	void draw() override;
 
+	void update() override;
+
 };
