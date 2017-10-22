@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Quad.h"
 #include "Triangle.h"
 
 enum ErrorCode
@@ -74,6 +75,10 @@ int main()
 
 	triangle.initialize();
 
+	Quad quad(shaderProgram);
+
+	quad.initialize();
+
 	MAT4 view = glm::lookAt
 	(
 		glm::vec3(0.0f, 0.0f, 2.0f),
@@ -92,15 +97,16 @@ int main()
 	glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
 	triangle.initializeTransformUniform("model");
+	quad.initializeTransformUniform("model");
 
 	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		triangle.render();
+		quad.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

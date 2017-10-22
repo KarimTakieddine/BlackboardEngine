@@ -130,6 +130,15 @@ Mesh & Mesh::bindVertexData(BufferData<GLfloat> const & vertexData)
 	return *this;
 }
 
+Mesh & Mesh::bindElementData(BufferData<GLuint> const & elementData)
+{
+	m_elementBufferSize = elementData.size;
+
+	bindBufferData<GLuint>(m_elementBufferIndex, elementData);
+
+	return *this;
+}
+
 GLboolean Mesh::bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const
 {
 	if (!isBoundToState(m_vertexArrayIndex, GL_VERTEX_ARRAY_BINDING))
