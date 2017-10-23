@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "RGBColor.h"
 
 class ImageBuffer
 {
@@ -17,6 +18,8 @@ public:
 
 	GLint getHeight() const;
 
+	GLsizeiptr getSize() const;
+
 	GLubyte const * getData() const;
 
 	~ImageBuffer();
@@ -24,6 +27,7 @@ public:
 private:
 
 	GLubyte * m_data;
+	GLsizeiptr m_size;
 	GLint m_width, m_height;
 
 };

@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 #include "BufferData.hpp"
-#include "ImageBuffer.h"
+#include "Image.h"
 #include "Texture.h"
 #include "TransformUniform.h"
 #include "VertexAttribute.h"

@@ -148,7 +148,7 @@ GLboolean Mesh::loadTextureFile(GLchar const * filename, Texture const & texture
 		return GL_FALSE;
 	}
 
-	m_textureBufferSize = buffer.getWidth() * buffer.getHeight() * 3;
+	m_textureBufferSize = buffer.getSize();
 
 	if (m_textureBufferSize == 0)
 	{

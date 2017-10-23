@@ -159,6 +159,8 @@
   <ItemGroup>
     <ClInclude Include="BufferAttribute.h" />
     <ClInclude Include="BufferData.hpp" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="RGBColor.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="ImageBuffer.h" />
     <ClInclude Include="Quad.h" />
@@ -179,9 +181,11 @@
     <ClCompile Include="BufferAttribute.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="RGBColor.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StateConstants.cpp" />
     <ClCompile Include="Texture.cpp" />
