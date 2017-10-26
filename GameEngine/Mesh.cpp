@@ -38,7 +38,7 @@ GLboolean Mesh::copyBufferData(GLuint source, GLuint destination, GLsizeiptr siz
 
 Mesh::Mesh()
 :
-m_transformUniform(),
+transformUniform(),
 m_shaderProgram(nullptr),
 m_vertexBufferSize(),
 m_elementBufferSize(),
@@ -52,7 +52,7 @@ m_textureBufferSize()
 
 Mesh::Mesh(ShaderProgram const & program)
 :
-m_transformUniform(),
+transformUniform(),
 m_shaderProgram(&program),
 m_vertexBufferSize(),
 m_elementBufferSize(),
@@ -66,7 +66,7 @@ m_textureBufferSize()
 
 Mesh::Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureIndex, ShaderProgram const & program)
 :
-m_transformUniform(),
+transformUniform(),
 m_shaderProgram(&program),
 m_vertexBufferSize(),
 m_elementBufferSize(),
@@ -79,10 +79,9 @@ m_textureIndex(textureIndex)
 
 Mesh::Mesh(Mesh const & other)
 :
-m_transformUniform(other.m_transformUniform),
+transformUniform(other.transformUniform),
 m_shaderProgram(other.m_shaderProgram),
 m_vertexBufferSize(other.m_vertexBufferSize),
-m_elementBufferSize(other.m_elementBufferSize),
 m_textureBufferSize(other.m_textureBufferSize)
 {
 	glGenVertexArrays(1, &m_vertexArrayIndex);
@@ -95,11 +94,10 @@ m_textureBufferSize(other.m_textureBufferSize)
 
 Mesh & Mesh::operator=(Mesh const & other)
 {
-	m_transformUniform = other.m_transformUniform;
+	transformUniform = other.transformUniform;
 	m_shaderProgram = other.m_shaderProgram;
 
-	m_vertexBufferSize = other.m_vertexBufferSize,
-	m_elementBufferSize = other.m_elementBufferSize;
+	m_vertexBufferSize = other.m_vertexBufferSize;
 	m_textureBufferSize = other.m_textureBufferSize;
 
 	glGenVertexArrays(1, &m_vertexArrayIndex);
@@ -113,6 +111,10 @@ Mesh & Mesh::operator=(Mesh const & other)
 Mesh & Mesh::copy(Mesh const & other)
 {
 	copyBufferData(other.m_vertexBufferIndex, m_vertexBufferIndex, other.m_vertexBufferSize);
+
+	glBindVertexArray(m_vertexArrayIndex);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementBufferIndex);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, other.m_elementBufferSize, nullptr, GL_STATIC_DRAW);
 
 	copyBufferData(other.m_elementBufferIndex, m_elementBufferIndex, other.m_elementBufferSize);
 
@@ -185,7 +187,7 @@ GLboolean Mesh::bindVertexAttribute(GLboolean normalized, VertexAttribute const 
 
 void Mesh::initializeTransformUniform(GLchar const * name)
 {
-	m_transformUniform.initialize(name, *m_shaderProgram);
+	transformUniform.initialize(name, *m_shaderProgram);
 }
 
 void Mesh::render()
@@ -199,7 +201,7 @@ void Mesh::render()
 
 	draw();
 
-	m_transformUniform.doBinding();
+	transformUniform.doBinding();
 
 	update();
 }

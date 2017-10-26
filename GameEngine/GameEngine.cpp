@@ -2,6 +2,7 @@
 #include "ImageBuffer.h"
 #include "Quad.h"
 #include "Triangle.h"
+#include "Time.h"
 
 enum ErrorCode
 {
@@ -72,14 +73,14 @@ int main()
 
 	shaderProgram.use();
 
-	Triangle triangle(shaderProgram);
-
-	triangle.initialize();
-
 	Quad quad(shaderProgram);
 
 	quad.initialize();
-	quad.loadTextureFile(".\\resources\\cat.png", Texture());
+	quad.initializeTransformUniform("model");
+
+	Quad quadCopy(quad);
+	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 8 * sizeof(GLfloat)), shaderProgram));
+	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
 
 	MAT4 view = glm::lookAt
 	(
@@ -98,10 +99,9 @@ int main()
 
 	glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
-	triangle.initializeTransformUniform("model");
-	quad.initializeTransformUniform("model");
-
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -109,6 +109,10 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		quad.render();
+		quad.transformUniform.transform.translate(VEC3(0.05 * Time::deltaTime, 0.0f, 0.05 * Time::deltaTime));
+
+		quadCopy.render();
+		quadCopy.transformUniform.transform.translate(VEC3(-0.05 * Time::deltaTime, 0.0f, -0.05 * Time::deltaTime));
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -117,6 +121,8 @@ int main()
 		{
 			glfwSetWindowShouldClose(window, GL_TRUE);
 		}
+
+		Time::updateState();
 	}
 
 	glfwTerminate();

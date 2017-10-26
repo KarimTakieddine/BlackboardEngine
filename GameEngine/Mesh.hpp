@@ -13,6 +13,8 @@ class Mesh
 
 public:
 
+	TransformUniform transformUniform;
+
 	static GLboolean isBoundToState(GLuint index, GLenum binding);
 
 	static GLboolean isBufferBoundToState(GLuint bufferIndex, GLenum target);
@@ -64,8 +66,7 @@ protected:
 
 	virtual void draw() = 0;
 	virtual void update() = 0;
-	
-	TransformUniform m_transformUniform;
+
 	ShaderProgram const * m_shaderProgram;
 	GLsizeiptr m_vertexBufferSize, m_elementBufferSize, m_textureBufferSize;
 	GLuint m_vertexArrayIndex, m_vertexBufferIndex, m_elementBufferIndex, m_textureIndex;
