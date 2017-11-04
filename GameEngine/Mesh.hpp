@@ -50,7 +50,11 @@ public:
 
 	Mesh & bindElementData(BufferData<GLuint> const & elementData);
 
+	GLboolean loadTextureData(GLint width, GLint height, GLubyte const * data, GLsizeiptr size, Texture const & texture);
+
 	GLboolean loadTextureFile(GLchar const * filename, Texture const & texture);
+
+	GLboolean copyTextureData(Mesh const & other);
 
 	GLboolean bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const;
 
@@ -67,8 +71,10 @@ protected:
 	virtual void draw() = 0;
 	virtual void update() = 0;
 
+	Texture m_texture;
 	ShaderProgram const * m_shaderProgram;
 	GLsizeiptr m_vertexBufferSize, m_elementBufferSize, m_textureBufferSize;
 	GLuint m_vertexArrayIndex, m_vertexBufferIndex, m_elementBufferIndex, m_textureIndex;
+	GLint m_textureWidth, m_textureHeight;
 
 };

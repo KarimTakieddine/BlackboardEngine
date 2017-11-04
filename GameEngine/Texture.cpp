@@ -11,6 +11,26 @@ minimizeFilter(GL_LINEAR),
 magnifyFilter(GL_LINEAR)
 { }
 
+Texture::Texture
+(
+	GLenum minFilter,
+	GLenum magFilter,
+	GLenum hWrapMode,
+	GLenum vWrapMode,
+	GLenum tBinding,
+	VEC3 const & bColor
+)
+:
+borderColor(bColor),
+targetBinding(tBinding),
+horizontalWrapMode(hWrapMode),
+verticalWrapMode(vWrapMode),
+minimizeFilter(minFilter),
+magnifyFilter(magFilter)
+{
+
+}
+
 Texture::Texture(Texture const & other)
 :
 borderColor(other.borderColor),

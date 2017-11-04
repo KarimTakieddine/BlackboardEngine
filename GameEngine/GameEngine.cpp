@@ -76,12 +76,15 @@ int main()
 	Quad quad(shaderProgram);
 
 	quad.initialize();
+	quad.loadTextureFile(".\\resources\\cat.png", Texture(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
 	quad.initializeTransformUniform("model");
 
 	Quad quadCopy(quad);
+	//quadCopy.loadTextureFile(".\\resources\\pup.png", Texture(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
 	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 8 * sizeof(GLfloat)), shaderProgram));
 	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
-
+	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 6 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
+	
 	MAT4 view = glm::lookAt
 	(
 		glm::vec3(0.0f, 0.0f, 2.0f),
