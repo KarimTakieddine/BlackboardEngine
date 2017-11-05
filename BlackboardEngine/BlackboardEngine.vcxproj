@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{ECF6F710-F03B-46D5-BA21-74AC25A621A2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GameEngine</RootNamespace>
+    <RootNamespace>BlackboardEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -181,7 +181,7 @@
   <ItemGroup>
     <ClCompile Include="BufferAttribute.cpp" />
     <ClCompile Include="File.cpp" />
-    <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="BlackboardEngine.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />

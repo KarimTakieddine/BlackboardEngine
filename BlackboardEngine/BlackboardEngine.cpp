@@ -31,7 +31,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	GLFWwindow * window = glfwCreateWindow(640, 480, "GameEngine", nullptr, nullptr);
+	GLFWwindow * window = glfwCreateWindow(640, 480, "BlackboardEngine", nullptr, nullptr);
 
 	if (!window)
 	{
