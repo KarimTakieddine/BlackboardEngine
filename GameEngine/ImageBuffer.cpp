@@ -32,6 +32,14 @@ GLboolean ImageBuffer::load(GLchar const * filename)
 	return m_data ? GL_TRUE : GL_FALSE;
 }
 
+GLboolean ImageBuffer::loadData(GLsizei width, GLsizei height, GLsizeiptr size, GLubyte const * data)
+{
+	m_size = size;
+	m_data = SOIL_load_image_from_memory(data, size, &m_width, &m_height, nullptr, SOIL_LOAD_RGB);
+
+	return m_data ? GL_TRUE : GL_FALSE;
+}
+
 GLint ImageBuffer::getWidth() const
 {
 	return m_width;

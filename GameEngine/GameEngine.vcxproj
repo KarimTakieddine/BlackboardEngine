@@ -164,7 +164,8 @@
     <ClInclude Include="File.h" />
     <ClInclude Include="ImageBuffer.h" />
     <ClInclude Include="Quad.h" />
-    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureAttribute.h" />
+    <ClInclude Include="TextureData.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Mesh.hpp" />
@@ -188,7 +189,8 @@
     <ClCompile Include="RGBColor.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StateConstants.cpp" />
-    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureAttribute.cpp" />
+    <ClCompile Include="TextureData.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TransformUniform.cpp" />

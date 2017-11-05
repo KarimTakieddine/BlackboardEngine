@@ -4,7 +4,8 @@
 
 #include "BufferData.hpp"
 #include "Image.h"
-#include "Texture.h"
+#include "TextureAttribute.h"
+#include "TextureData.h"
 #include "TransformUniform.h"
 #include "VertexAttribute.h"
 
@@ -50,9 +51,9 @@ public:
 
 	Mesh & bindElementData(BufferData<GLuint> const & elementData);
 
-	GLboolean loadTextureData(GLint width, GLint height, GLubyte const * data, GLsizeiptr size, Texture const & texture);
+	GLboolean loadTextureData(GLubyte const * data, TextureData const & textureData, TextureAttribute const & textureAttribute);
 
-	GLboolean loadTextureFile(GLchar const * filename, Texture const & texture);
+	GLboolean loadTextureFile(GLchar const * filename, TextureAttribute const & textureAttribute);
 
 	GLboolean copyTextureData(Mesh const & other);
 
@@ -71,10 +72,9 @@ protected:
 	virtual void draw() = 0;
 	virtual void update() = 0;
 
-	Texture m_texture;
+	TextureAttribute m_textureAttribute;
+	TextureData m_textureData;
 	ShaderProgram const * m_shaderProgram;
-	GLsizeiptr m_vertexBufferSize, m_elementBufferSize, m_textureBufferSize;
+	GLsizeiptr m_vertexBufferSize, m_elementBufferSize;
 	GLuint m_vertexArrayIndex, m_vertexBufferIndex, m_elementBufferIndex, m_textureIndex;
-	GLint m_textureWidth, m_textureHeight;
-
 };

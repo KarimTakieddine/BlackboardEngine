@@ -14,9 +14,11 @@ public:
 
 	GLboolean load(GLchar const * filename);
 
-	GLint getWidth() const;
+	GLboolean loadData(GLsizei width, GLsizei height, GLsizeiptr size, GLubyte const * data);
 
-	GLint getHeight() const;
+	GLsizei getWidth() const;
+
+	GLsizei getHeight() const;
 
 	GLsizeiptr getSize() const;
 
@@ -28,6 +30,6 @@ private:
 
 	GLubyte * m_data;
 	GLsizeiptr m_size;
-	GLint m_width, m_height;
+	GLsizei m_width, m_height;
 
 };

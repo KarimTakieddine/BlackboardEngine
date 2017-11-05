@@ -39,13 +39,11 @@ GLboolean Mesh::copyBufferData(GLuint source, GLuint destination, GLsizeiptr siz
 Mesh::Mesh()
 :
 transformUniform(),
-m_texture(),
+m_textureAttribute(),
+m_textureData(),
 m_shaderProgram(nullptr),
 m_vertexBufferSize(),
-m_elementBufferSize(),
-m_textureBufferSize(),
-m_textureWidth(),
-m_textureHeight()
+m_elementBufferSize()
 {
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
@@ -56,12 +54,11 @@ m_textureHeight()
 Mesh::Mesh(ShaderProgram const & program)
 :
 transformUniform(),
-m_texture(),
+m_textureAttribute(),
+m_textureData(),
 m_shaderProgram(&program),
 m_vertexBufferSize(),
-m_elementBufferSize(),
-m_textureBufferSize(),
-m_textureWidth()
+m_elementBufferSize()
 {
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
@@ -72,11 +69,11 @@ m_textureWidth()
 Mesh::Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureIndex, ShaderProgram const & program)
 :
 transformUniform(),
-m_texture(),
+m_textureAttribute(),
+m_textureData(),
 m_shaderProgram(&program),
 m_vertexBufferSize(),
 m_elementBufferSize(),
-m_textureBufferSize(),
 m_vertexArrayIndex(vertexArrayIndex),
 m_vertexBufferIndex(vertexBufferIndex),
 m_elementBufferIndex(elementBufferIndex),
@@ -148,38 +145,35 @@ Mesh & Mesh::bindElementData(BufferData<GLuint> const & elementData)
 	return *this;
 }
 
-GLboolean Mesh::loadTextureData(GLint width, GLint height, GLubyte const * data, GLsizeiptr size, Texture const & texture)
+GLboolean Mesh::loadTextureData(GLubyte const * data, TextureData const & textureData, TextureAttribute const & textureAttribute)
 {
-	if (width <= 0 || height <= 0)
+	if (!textureData.isValid())
 	{
 		return GL_FALSE;
 	}
 
-	m_textureBufferSize = size;
-	m_textureWidth		= width;
-	m_textureHeight		= height;
-
-	GLenum target = texture.targetBinding;
+	GLenum target = textureAttribute.targetBinding;
 
 	if (!isBufferBoundToState(m_textureIndex, target))
 	{
 		glBindTexture(target, m_textureIndex);
 	}
 
-	glTexImage2D(target, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(target, 0, GL_RGB, textureData.width, textureData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
-	glTexParameteri(target, GL_TEXTURE_WRAP_S, texture.horizontalWrapMode);
-	glTexParameteri(target, GL_TEXTURE_WRAP_T, texture.verticalWrapMode);
-	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, texture.minimizeFilter);
-	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, texture.magnifyFilter);
-	glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(texture.borderColor));
+	glTexParameteri(target,		GL_TEXTURE_WRAP_S,			textureAttribute.horizontalWrapMode);
+	glTexParameteri(target,		GL_TEXTURE_WRAP_T,			textureAttribute.verticalWrapMode);
+	glTexParameteri(target,		GL_TEXTURE_MIN_FILTER,		textureAttribute.minimizeFilter);
+	glTexParameteri(target,		GL_TEXTURE_MAG_FILTER,		textureAttribute.magnifyFilter);
+	glTexParameterfv(target,	GL_TEXTURE_BORDER_COLOR,	glm::value_ptr(textureAttribute.borderColor));
 
-	m_texture = texture;
+	m_textureAttribute	= textureAttribute;
+	m_textureData		= textureData;
 
 	return GL_TRUE;
 }
 
-GLboolean Mesh::loadTextureFile(GLchar const * filename, Texture const & texture)
+GLboolean Mesh::loadTextureFile(GLchar const * filename, TextureAttribute const & texture)
 {
 	ImageBuffer buffer;
 
@@ -188,25 +182,26 @@ GLboolean Mesh::loadTextureFile(GLchar const * filename, Texture const & texture
 		return GL_FALSE;
 	}
 
-	return loadTextureData(buffer.getWidth(), buffer.getHeight(), buffer.getData(), buffer.getSize(), texture);
+	return loadTextureData(buffer.getData(), TextureData(buffer.getWidth(), buffer.getHeight(), buffer.getSize()), texture);
 }
 
 GLboolean Mesh::copyTextureData(Mesh const & other)
 {
-	GLsizeiptr const textureBufferSize = other.m_textureBufferSize;
+	TextureData const & textureData = other.m_textureData;
 
-	if (textureBufferSize == 0)
+	if (textureData.size == 0)
 	{
 		return GL_FALSE;
 	}
 
-	Texture const & texture = other.m_texture;
-	GLenum const target = texture.targetBinding;
+	TextureAttribute const & textureAttribute	= other.m_textureAttribute;
+	GLenum const target							= textureAttribute.targetBinding;
+	GLsizeiptr const size						= textureData.size;
+	unsigned char * textureImageData			= new unsigned char[size];
 
-	unsigned char * textureImageData = new unsigned char[textureBufferSize];
-	glGetTexImage(texture.targetBinding, 0, GL_RGB, GL_UNSIGNED_BYTE, textureImageData);
+	glGetTexImage(target, 0, GL_RGB, GL_UNSIGNED_BYTE, textureImageData);
 
-	if (!loadTextureData(other.m_textureWidth, other.m_textureHeight, textureImageData, textureBufferSize, texture))
+	if (!loadTextureData(textureImageData, textureData, textureAttribute))
 	{
 		delete[](textureImageData);
 		return GL_FALSE;
@@ -240,9 +235,9 @@ void Mesh::render()
 		glBindVertexArray(m_vertexArrayIndex);
 	}
 
-	if (!isBufferBoundToState(m_textureIndex, m_texture.targetBinding))
+	if (!isBufferBoundToState(m_textureIndex, m_textureAttribute.targetBinding))
 	{
-		glBindTexture(m_texture.targetBinding, m_textureIndex);
+		glBindTexture(m_textureAttribute.targetBinding, m_textureIndex);
 	}
 
 	draw();
