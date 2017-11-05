@@ -14,7 +14,7 @@ public:
 
 	GLboolean load(GLchar const * filename);
 
-	GLboolean loadData(GLsizei width, GLsizei height, GLsizeiptr size, GLubyte const * data);
+	GLboolean loadData(GLsizei width, GLsizei height, GLubyte const * data);
 
 	GLsizei getWidth() const;
 
