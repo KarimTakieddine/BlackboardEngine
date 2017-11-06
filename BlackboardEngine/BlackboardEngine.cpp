@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include "ImageBuffer.h"
 #include "Quad.h"
+#include "Cube.h"
 #include "Triangle.h"
 #include "Time.h"
 
@@ -92,18 +93,17 @@ int main()
 
 	shaderProgram.use();
 
-	Quad quad(shaderProgram);
+	Cube cube(Cube::TEXTURED, shaderProgram);
 
-	quad.initialize();
-	quad.loadTextureFile(".\\resources\\cat.png", TextureAttribute(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
-	quad.initializeTransformUniform("model");
+	cube.initialize();
+	cube.loadTextureFile(".\\resources\\cat.png", TextureAttribute(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
+	cube.initializeTransformUniform("model");
 
-	Quad quadCopy(quad);
-	//quadCopy.loadTextureFile(".\\resources\\pup.png", TextureAttribute(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
-	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 8 * sizeof(GLfloat)), shaderProgram));
-	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
-	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 6 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
-	
+	Cube cubeCopy(cube);
+	cubeCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 8 * sizeof(GLfloat)), shaderProgram));
+	cubeCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
+	cubeCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 6 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
+
 	MAT4 view = glm::lookAt
 	(
 		glm::vec3(0.0f, 0.0f, 2.0f),
@@ -125,16 +125,27 @@ int main()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	cube.transformUniform.transform.setScale(VEC3(0.5f, 0.5f, 0.5f));
+	cubeCopy.transformUniform.transform.setScale(VEC3(0.25f, 0.25f, 0.25f));
+
+	float degrees = 0.0f;
+	float displacement = 0.0f;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		quad.render();
-		quad.transformUniform.transform.translate(VEC3(0.05 * Time::deltaTime, 0.0f, 0.05 * Time::deltaTime));
+		degrees += 15.0f * Time::deltaTime;
+		displacement += 0.05f * Time::deltaTime;
 
-		quadCopy.render();
-		quadCopy.transformUniform.transform.translate(VEC3(-0.05 * Time::deltaTime, 0.0f, -0.05 * Time::deltaTime));
+		cube.render();
+		cube.transformUniform.transform.setRotation(degrees, VEC3(1.0f, 1.0f, 0.0f));
+		cube.transformUniform.transform.setTranslation(VEC3(displacement, 0.0f, 0.0f));
+
+		cubeCopy.render();
+		cubeCopy.transformUniform.transform.setRotation(-degrees, VEC3(1.0f, 1.0f, 0.0f));
+		cubeCopy.transformUniform.transform.setTranslation(VEC3(-displacement, 0.0f, 0.0f));
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

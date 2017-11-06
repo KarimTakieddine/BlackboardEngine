@@ -17,59 +17,52 @@
 
 *	--------------------###############################################################################--------------------- */
 
+#pragma once
+
 #include "stdafx.h"
-#include "Transform.h"
+#include "Mesh.hpp"
 
-Transform::Transform()
-:
-m_data()
-{ }
-
-Transform::Transform(Transform const & other)
-:
-m_data(other.m_data)
-{ }
-
-Transform & Transform::operator=(Transform const & other)
+class Cube : public Mesh
 {
-	m_data = other.m_data;
 
-	return *this;
-}
+public:
 
-Transform & Transform::setTranslation(VEC3 const & displacement)
-{
-	m_translation = glm::translate(displacement);
+	enum RenderFlag
+	{
+		COLORED		= 0x00000000,
+		TEXTURED	= 0x00000001
+	};
 
-	recomputeData();
+	Cube();
 
-	return *this;
-}
+	explicit Cube
+	(
+		ShaderProgram const & program
+	);
 
-Transform & Transform::setRotation(GLfloat degrees, VEC3 const & axis)
-{
-	m_rotation = glm::rotate(glm::radians(degrees), axis);
+	explicit Cube
+	(
+		RenderFlag flag,
+		ShaderProgram const & program
+	);
 
-	recomputeData();
+	Cube
+	(
+		Cube const & other
+	);
 
-	return *this;
-}
+	void setRenderFlag(RenderFlag flag);
 
-Transform & Transform::setScale(VEC3 const & scale)
-{
-	m_scale = glm::scale(scale);
-	
-	recomputeData();
+	void initialize() override;
 
-	return *this;
-}
+protected:
 
-GLfloat const * Transform::getData() const
-{
-	return glm::value_ptr(m_data);
-}
+	void draw() override;
 
-void Transform::recomputeData()
-{
-	m_data = m_translation * m_rotation * m_scale;
-}
+	void update() override;
+
+private:
+
+	unsigned char m_renderFlag;
+
+};

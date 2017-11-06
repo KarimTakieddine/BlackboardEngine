@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="BufferAttribute.h" />
     <ClInclude Include="BufferData.hpp" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="RGBColor.h" />
     <ClInclude Include="File.h" />
@@ -180,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BufferAttribute.cpp" />
+    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="BlackboardEngine.cpp" />
     <ClCompile Include="Image.cpp" />
