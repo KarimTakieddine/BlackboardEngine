@@ -8,5 +8,5 @@ uniform sampler2D sampler;
 
 void main()
 {
-	fragmentColor = texture(sampler, samplerCoordinates) * vec4(vertexColor, 1.0);
+	fragmentColor = vec4(vertexColor, 1.0);
 }

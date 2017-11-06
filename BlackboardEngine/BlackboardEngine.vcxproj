@@ -165,6 +165,7 @@
     <ClInclude Include="File.h" />
     <ClInclude Include="ImageBuffer.h" />
     <ClInclude Include="Quad.h" />
+    <ClInclude Include="Tetrahedron.h" />
     <ClInclude Include="TextureAttribute.h" />
     <ClInclude Include="TextureData.h" />
     <ClInclude Include="Time.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="RGBColor.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StateConstants.cpp" />
+    <ClCompile Include="Tetrahedron.cpp" />
     <ClCompile Include="TextureAttribute.cpp" />
     <ClCompile Include="TextureData.cpp" />
     <ClCompile Include="Time.cpp" />

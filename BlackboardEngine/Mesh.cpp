@@ -247,7 +247,11 @@ void Mesh::initializeTransformUniform(GLchar const * name)
 
 void Mesh::render()
 {
+	update();
+
 	m_shaderProgram->use();
+
+	transformUniform.doBinding();
 
 	if (!isBoundToState(m_vertexArrayIndex, GL_VERTEX_ARRAY_BINDING))
 	{
@@ -260,10 +264,6 @@ void Mesh::render()
 	}
 
 	draw();
-
-	transformUniform.doBinding();
-
-	update();
 }
 
 Mesh::~Mesh()

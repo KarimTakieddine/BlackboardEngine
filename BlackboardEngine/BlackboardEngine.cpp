@@ -21,6 +21,7 @@
 #include "ImageBuffer.h"
 #include "Quad.h"
 #include "Cube.h"
+#include "Tetrahedron.h"
 #include "Triangle.h"
 #include "Time.h"
 
@@ -104,6 +105,11 @@ int main()
 	cubeCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
 	cubeCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 6 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
 
+	Tetrahedron tetrahedron(shaderProgram);
+
+	tetrahedron.initialize();
+	tetrahedron.initializeTransformUniform("model");
+
 	MAT4 view = glm::lookAt
 	(
 		glm::vec3(0.0f, 0.0f, 2.0f),
@@ -127,6 +133,7 @@ int main()
 
 	cube.transformUniform.transform.setScale(VEC3(0.5f, 0.5f, 0.5f));
 	cubeCopy.transformUniform.transform.setScale(VEC3(0.25f, 0.25f, 0.25f));
+	tetrahedron.transformUniform.transform.setScale(VEC3(0.75f, 0.75f, 0.75f));
 
 	float degrees = 0.0f;
 	float displacement = 0.0f;
@@ -136,16 +143,19 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		degrees += 15.0f * Time::deltaTime;
+		degrees += 30.0f * Time::deltaTime;
 		displacement += 0.05f * Time::deltaTime;
 
-		cube.render();
 		cube.transformUniform.transform.setRotation(degrees, VEC3(1.0f, 1.0f, 0.0f));
 		cube.transformUniform.transform.setTranslation(VEC3(displacement, 0.0f, 0.0f));
+		cube.render();
 
-		cubeCopy.render();
 		cubeCopy.transformUniform.transform.setRotation(-degrees, VEC3(1.0f, 1.0f, 0.0f));
 		cubeCopy.transformUniform.transform.setTranslation(VEC3(-displacement, 0.0f, 0.0f));
+		cubeCopy.render();
+
+		tetrahedron.transformUniform.transform.setRotation(degrees, VEC3(0.0f, 1.0f, 0.0f));
+		tetrahedron.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
