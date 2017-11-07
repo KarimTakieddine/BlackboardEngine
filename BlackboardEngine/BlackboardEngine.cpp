@@ -93,22 +93,22 @@ int main()
 	}
 
 	ShaderProgram colorShaderProgram;
-	ShaderProgram textureShaderProgram;
 
 	colorShaderProgram.attachShader(vertexShader).attachShader(fragmentColorShader).link();
-	textureShaderProgram.attachShader(vertexShader).attachShader(fragmentTextureShader).link();
 
 	if (!colorShaderProgram.isLinked())
 	{
 		return ERROR_SHD_PROGRAM_LINK;
 	}
 
+	ShaderProgram textureShaderProgram;
+
+	textureShaderProgram.attachShader(vertexShader).attachShader(fragmentTextureShader).link();
+
 	if (!textureShaderProgram.isLinked())
 	{
 		return ERROR_SHD_PROGRAM_LINK;
 	}
-
-	colorShaderProgram.use();
 
 	Triangle triangle(colorShaderProgram);
 	triangle.initialize();
@@ -123,8 +123,6 @@ int main()
 	wireframeTriangle.setRenderFlag(WIREFRAME);
 	wireframeTriangle.initializeTransformUniform("model");
 
-	textureShaderProgram.use();
-
 	Quad quad(textureShaderProgram);
 	quad.setRenderFlag(TEXTURED);
 	quad.loadTextureFile(".\\resources\\cat.png", TextureAttribute(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
@@ -135,7 +133,6 @@ int main()
 	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), textureShaderProgram));
 	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 6 * sizeof(GLfloat), 8 * sizeof(GLfloat)), textureShaderProgram));
 
-	colorShaderProgram.use();
 	Quad wireframeQuad(colorShaderProgram);
 	wireframeQuad.setRenderFlag(WIREFRAME);
 	wireframeQuad.initializeTransformUniform("model");
@@ -149,6 +146,7 @@ int main()
 
 	MAT4 projection = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 1.0f, -10.0f);
 
+	colorShaderProgram.use();
 	GLint viewUniformColorLocation = glGetUniformLocation(colorShaderProgram.getIndex(), "view");
 	glUniformMatrix4fv(viewUniformColorLocation, 1, GL_FALSE, glm::value_ptr(view));
 	GLint projectionUniformColorLocation = glGetUniformLocation(colorShaderProgram.getIndex(), "projection");
