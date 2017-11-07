@@ -25,29 +25,54 @@ Triangle::Triangle()
 Mesh()
 { }
 
-Triangle::Triangle(ShaderProgram const & program)
+Triangle::Triangle
+(
+	ShaderProgram const & program
+)
 :
 Mesh(program)
 { }
 
 Triangle::Triangle
 (
-	GLuint vertexArrayIndex,
-	GLuint vertexBufferIndex,
-	GLuint elementBufferIndex,
-	GLuint textureBufferIndex,
-	ShaderProgram const & program
+	Triangle const & other
 )
-:
-Mesh(vertexArrayIndex, vertexBufferIndex, elementBufferIndex, textureBufferIndex, program)
-{ }
-
-Triangle::Triangle(Triangle const & other)
 :
 Mesh(other)
 { }
 
-void Triangle::initialize()
+void Triangle::initializeTextured()
+{
+
+}
+
+void Triangle::initializeWireframe()
+{
+	GLfloat const vertices[18] =
+	{
+		-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
+		0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
+		0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f
+	};
+
+	GLuint const elements[6] =
+	{
+		0, 1,
+
+		1, 2,
+
+		2, 0
+	};
+
+	bindVertexData(BufferData<GLfloat>(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices, sizeof(vertices)));
+
+	bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 6 * sizeof(GLfloat)), *m_shaderProgram));
+	bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat)), *m_shaderProgram));
+
+	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, elements, sizeof(elements)));
+}
+
+void Triangle::initializeVertexColored()
 {
 	GLfloat const vertices[18] =
 	{
@@ -62,12 +87,22 @@ void Triangle::initialize()
 	bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat)), *m_shaderProgram));
 }
 
-void Triangle::draw()
-{
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-}
-
 void Triangle::update()
 {
 
+}
+
+void Triangle::drawTextured()
+{
+
+}
+
+void Triangle::drawWireframe()
+{
+	glDrawElements(GL_LINES, 6, GL_UNSIGNED_INT, nullptr);
+}
+
+void Triangle::drawVertexColored()
+{
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 }

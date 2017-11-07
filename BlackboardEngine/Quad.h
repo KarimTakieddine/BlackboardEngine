@@ -29,18 +29,25 @@ public:
 
 	Quad();
 
-	explicit Quad(ShaderProgram const & program);
+	explicit Quad
+	(
+		ShaderProgram const & program
+	);
 
-	explicit Quad(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program);
+	Quad
+	(
+		Quad const & other
+	);
 
-	Quad(Quad const & other);
-
-	void initialize() override;
+	void initializeTextured()		override;
+	void initializeWireframe()		override;
+	void initializeVertexColored()	override;
 
 protected:
 
-	void draw() override;
-
-	void update() override;
+	void update()				override;
+	void drawTextured()			override;
+	void drawWireframe()		override;
+	void drawVertexColored()	override;
 
 };

@@ -25,36 +25,23 @@ Quad::Quad()
 Mesh()
 { }
 
-Quad::Quad(ShaderProgram const & program)
+Quad::Quad
+(
+	ShaderProgram const & program
+)
 :
 Mesh(program)
 { }
 
 Quad::Quad
 (
-	GLuint vertexArrayIndex,
-	GLuint vertexBufferIndex,
-	GLuint elementBufferIndex,
-	GLuint textureBufferIndex,
-	ShaderProgram const & program
+	Quad const & other
 )
-:
-Mesh
-(
-	vertexArrayIndex,
-	vertexBufferIndex,
-	elementBufferIndex,
-	textureBufferIndex,
-	program
-)
-{ }
-
-Quad::Quad(Quad const & other)
 :
 Mesh(other)
 { }
 
-void Quad::initialize()
+void Quad::initializeTextured()
 {
 	GLfloat const vertices[32] = 
 	{
@@ -79,12 +66,77 @@ void Quad::initialize()
 	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, elements, sizeof(elements)));
 }
 
-void Quad::draw()
+void Quad::initializeWireframe()
 {
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+	GLfloat const vertices[24] =
+	{
+		-0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
+		0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
+		0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
+		-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f
+	};
+
+	bindVertexData(BufferData<GLfloat>(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices, sizeof(vertices)));
+
+	bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 6 * sizeof(GLfloat)), *m_shaderProgram));
+	bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat)), *m_shaderProgram));
+
+	GLuint const elements[10] =
+	{
+		0, 1,
+
+		1, 2,
+
+		2, 3,
+
+		3, 0,
+
+		3, 1
+	};
+
+	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, elements, sizeof(elements)));
+}
+
+void Quad::initializeVertexColored()
+{
+	GLfloat const vertices[24] =
+	{
+		-0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f
+	};
+
+	bindVertexData(BufferData<GLfloat>(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices, sizeof(vertices)));
+
+	bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 6 * sizeof(GLfloat)), *m_shaderProgram));
+	bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat)), *m_shaderProgram));
+
+	GLuint const elements[8] =
+	{
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, elements, sizeof(elements)));
 }
 
 void Quad::update()
 {
 
+}
+
+void Quad::drawTextured()
+{
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+}
+
+void Quad::drawWireframe()
+{
+	glDrawElements(GL_LINES, 10, GL_UNSIGNED_INT, nullptr);
+}
+
+void Quad::drawVertexColored()
+{
+	drawTextured();
 }

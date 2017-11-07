@@ -41,7 +41,7 @@ Tetrahedron::Tetrahedron
 Mesh(other)
 { }
 
-void Tetrahedron::initialize()
+void Tetrahedron::initializeVertexColored()
 {
 	GLfloat const vertices[24] =
 	{
@@ -70,7 +70,7 @@ void Tetrahedron::initialize()
 	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, elements, sizeof(elements)));
 }
 
-void Tetrahedron::draw()
+void Tetrahedron::drawVertexColored()
 {
 	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, nullptr);
 }

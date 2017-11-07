@@ -57,12 +57,13 @@ GLboolean Mesh::copyBufferData(GLuint source, GLuint destination, GLsizeiptr siz
 
 Mesh::Mesh()
 :
-transformUniform(),
-m_textureAttribute(),
-m_textureData(),
-m_shaderProgram(nullptr),
-m_vertexBufferSize(),
-m_elementBufferSize()
+transformUniform	(),
+m_textureAttribute	(),
+m_textureData		(),
+m_shaderProgram		(nullptr),
+m_vertexBufferSize	(),
+m_elementBufferSize	(),
+m_renderFlag		()
 {
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
@@ -70,14 +71,18 @@ m_elementBufferSize()
 	glGenTextures(1, &m_textureIndex);
 }
 
-Mesh::Mesh(ShaderProgram const & program)
+Mesh::Mesh
+(
+	ShaderProgram const & program
+)
 :
-transformUniform(),
-m_textureAttribute(),
-m_textureData(),
-m_shaderProgram(&program),
-m_vertexBufferSize(),
-m_elementBufferSize()
+transformUniform	(),
+m_textureAttribute	(),
+m_textureData		(),
+m_shaderProgram		(&program),
+m_vertexBufferSize	(),
+m_elementBufferSize	(),
+m_renderFlag		()
 {
 	glGenVertexArrays(1, &m_vertexArrayIndex);
 	glGenBuffers(1, &m_vertexBufferIndex);
@@ -85,86 +90,55 @@ m_elementBufferSize()
 	glGenTextures(1, &m_textureIndex);
 }
 
-Mesh::Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureIndex, ShaderProgram const & program)
+Mesh::Mesh
+(
+	RenderFlag				flag,
+	ShaderProgram const &	program
+)
 :
-transformUniform(),
-m_textureAttribute(),
-m_textureData(),
-m_shaderProgram(&program),
-m_vertexBufferSize(),
-m_elementBufferSize(),
-m_vertexArrayIndex(vertexArrayIndex),
-m_vertexBufferIndex(vertexBufferIndex),
-m_elementBufferIndex(elementBufferIndex),
-m_textureIndex(textureIndex)
+transformUniform	(),
+m_textureAttribute	(),
+m_textureData		(),
+m_shaderProgram		(&program),
+m_vertexBufferSize	(),
+m_elementBufferSize	(),
+m_renderFlag		(flag)
+{
+	glGenVertexArrays(1, &m_vertexArrayIndex);
+	glGenBuffers(1, &m_vertexBufferIndex);
+	glGenBuffers(1, &m_elementBufferIndex);
+	glGenTextures(1, &m_textureIndex);
+}
+
+Mesh::Mesh
+(
+	RenderFlag				flag,
+	GLuint					vertexArrayIndex,
+	GLuint					vertexBufferIndex,
+	GLuint					elementBufferIndex,
+	GLuint					textureIndex,
+	ShaderProgram const &	program
+)
+:
+transformUniform		(),
+m_textureAttribute		(),
+m_textureData			(),
+m_shaderProgram			(&program),
+m_vertexBufferSize		(),
+m_elementBufferSize		(),
+m_vertexArrayIndex		(vertexArrayIndex),
+m_vertexBufferIndex		(vertexBufferIndex),
+m_elementBufferIndex	(elementBufferIndex),
+m_textureIndex			(textureIndex),
+m_renderFlag			(flag)
 { }
 
-Mesh::Mesh(Mesh const & other)
-:
-transformUniform(other.transformUniform),
-m_shaderProgram(other.m_shaderProgram),
-m_vertexBufferSize(other.m_vertexBufferSize)
-{
-	glGenVertexArrays(1, &m_vertexArrayIndex);
-	glGenBuffers(1, &m_vertexBufferIndex);
-	glGenBuffers(1, &m_elementBufferIndex);
-	glGenTextures(1, &m_textureIndex);
-
-	copy(other);
-}
-
-Mesh & Mesh::operator=(Mesh const & other)
-{
-	transformUniform = other.transformUniform;
-	m_shaderProgram = other.m_shaderProgram;
-
-	m_vertexBufferSize = other.m_vertexBufferSize;
-
-	glGenVertexArrays(1, &m_vertexArrayIndex);
-	glGenBuffers(1, &m_vertexBufferIndex);
-	glGenBuffers(1, &m_elementBufferIndex);
-	glGenTextures(1, &m_textureIndex);
-
-	return copy(other);
-}
-
-Mesh & Mesh::copy(Mesh const & other)
-{
-	if (!isBoundToState(m_vertexArrayIndex, GL_VERTEX_ARRAY_BINDING))
-	{
-		glBindVertexArray(m_vertexArrayIndex);
-	}
-
-	copyBufferData(other.m_vertexBufferIndex, m_vertexBufferIndex, other.m_vertexBufferSize);
-
-	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, nullptr, other.m_elementBufferSize));
-
-	copyBufferData(other.m_elementBufferIndex, m_elementBufferIndex, other.m_elementBufferSize);
-
-	copyTextureData(other);
-
-	return *this;
-}
-
-Mesh & Mesh::bindVertexData(BufferData<GLfloat> const & vertexData)
-{
-	m_vertexBufferSize = vertexData.size;
-
-	bindBufferData<GLfloat>(m_vertexBufferIndex, vertexData);
-
-	return *this;
-}
-
-Mesh & Mesh::bindElementData(BufferData<GLuint> const & elementData)
-{
-	m_elementBufferSize = elementData.size;
-
-	bindBufferData<GLuint>(m_elementBufferIndex, elementData);
-
-	return *this;
-}
-
-GLboolean Mesh::loadTextureData(GLubyte const * data, TextureData const & textureData, TextureAttribute const & textureAttribute)
+GLboolean Mesh::loadTextureData
+(
+	GLubyte const *				data,
+	TextureData const &			textureData,
+	TextureAttribute const &	textureAttribute
+)
 {
 	if (!textureData.isValid())
 	{
@@ -192,19 +166,10 @@ GLboolean Mesh::loadTextureData(GLubyte const * data, TextureData const & textur
 	return GL_TRUE;
 }
 
-GLboolean Mesh::loadTextureFile(GLchar const * filename, TextureAttribute const & texture)
-{
-	ImageBuffer buffer;
-
-	if (!buffer.load(filename))
-	{
-		return GL_FALSE;
-	}
-
-	return loadTextureData(buffer.getData(), TextureData(buffer.getWidth(), buffer.getHeight(), buffer.getSize()), texture);
-}
-
-GLboolean Mesh::copyTextureData(Mesh const & other)
+GLboolean Mesh::copyTextureData
+(
+	Mesh const & other
+)
 {
 	TextureData const & textureData = other.m_textureData;
 
@@ -230,7 +195,106 @@ GLboolean Mesh::copyTextureData(Mesh const & other)
 	return GL_TRUE;
 }
 
-GLboolean Mesh::bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const
+Mesh & Mesh::copy
+(
+	Mesh const & other
+)
+{
+	if (!isBoundToState(m_vertexArrayIndex, GL_VERTEX_ARRAY_BINDING))
+	{
+		glBindVertexArray(m_vertexArrayIndex);
+	}
+
+	m_vertexBufferSize	= other.m_vertexBufferSize;
+	m_elementBufferSize = other.m_elementBufferSize;
+
+	copyBufferData(other.m_vertexBufferIndex, m_vertexBufferIndex, m_vertexBufferSize);
+	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, nullptr, m_elementBufferSize));
+	copyBufferData(other.m_elementBufferIndex, m_elementBufferIndex, m_elementBufferSize);
+	copyTextureData(other);
+
+	return *this;
+}
+
+Mesh::Mesh
+(
+	Mesh const & other
+)
+:
+transformUniform	(other.transformUniform),
+m_shaderProgram		(other.m_shaderProgram),
+m_renderFlag		(other.m_renderFlag)
+{
+	glGenVertexArrays(1, &m_vertexArrayIndex);
+	glGenBuffers(1, &m_vertexBufferIndex);
+	glGenBuffers(1, &m_elementBufferIndex);
+	glGenTextures(1, &m_textureIndex);
+
+	copy(other);
+}
+
+Mesh & Mesh::operator=
+(
+	Mesh const & other
+)
+{
+	transformUniform	= other.transformUniform;
+	m_shaderProgram		= other.m_shaderProgram;
+	m_renderFlag		= other.m_renderFlag;
+
+	glGenVertexArrays(1, &m_vertexArrayIndex);
+	glGenBuffers(1, &m_vertexBufferIndex);
+	glGenBuffers(1, &m_elementBufferIndex);
+	glGenTextures(1, &m_textureIndex);
+
+	return copy(other);
+}
+
+Mesh & Mesh::bindVertexData
+(
+	BufferData<GLfloat> const & vertexData
+)
+{
+	m_vertexBufferSize = vertexData.size;
+
+	bindBufferData<GLfloat>(m_vertexBufferIndex, vertexData);
+
+	return *this;
+}
+
+Mesh & Mesh::bindElementData
+(
+	BufferData<GLuint> const & elementData
+)
+{
+	m_elementBufferSize = elementData.size;
+
+	bindBufferData<GLuint>(m_elementBufferIndex, elementData);
+
+	return *this;
+}
+
+GLboolean Mesh::loadTextureFile
+(
+	GLchar	const *				filename,
+	TextureAttribute const &	texture
+)
+{
+	ImageBuffer buffer;
+
+	if (!buffer.load(filename))
+	{
+		return GL_FALSE;
+	}
+
+	return loadTextureData(buffer.getData(), TextureData(buffer.getWidth(), buffer.getHeight(), buffer.getSize()), texture);
+}
+
+GLboolean Mesh::bindVertexAttribute
+(
+	GLboolean				normalized,
+	VertexAttribute const & attribute
+) const
 {
 	if (!isBoundToState(m_vertexArrayIndex, GL_VERTEX_ARRAY_BINDING))
 	{
@@ -240,9 +304,64 @@ GLboolean Mesh::bindVertexAttribute(GLboolean normalized, VertexAttribute const 
 	return attribute.bind(normalized);
 }
 
-void Mesh::initializeTransformUniform(GLchar const * name)
+void Mesh::initialize()
+{
+	if ((m_renderFlag & TEXTURED) == TEXTURED)
+	{
+		initializeTextured();
+	}
+	else if ((m_renderFlag & WIREFRAME) == WIREFRAME)
+	{
+		initializeWireframe();
+	}
+	else
+	{
+		initializeVertexColored();
+	}
+}
+
+void Mesh::setRenderFlag
+(
+	RenderFlag flag
+)
+{
+	if (m_renderFlag == flag)
+	{
+		return;
+	}
+
+	m_renderFlag = flag;
+
+	initialize();
+}
+
+void Mesh::initializeTransformUniform
+(
+	GLchar const * name
+)
 {
 	transformUniform.initialize(name, *m_shaderProgram);
+}
+
+void Mesh::draw()
+{
+	if ((m_renderFlag & TEXTURED) == TEXTURED)
+	{
+		if (!isBufferBoundToState(m_textureIndex, m_textureAttribute.targetBinding))
+		{
+			glBindTexture(m_textureAttribute.targetBinding, m_textureIndex);
+		}
+
+		drawTextured();
+	}
+	else if ((m_renderFlag & WIREFRAME) == WIREFRAME)
+	{
+		drawWireframe();
+	}
+	else
+	{
+		drawVertexColored();
+	}
 }
 
 void Mesh::render()
@@ -256,11 +375,6 @@ void Mesh::render()
 	if (!isBoundToState(m_vertexArrayIndex, GL_VERTEX_ARRAY_BINDING))
 	{
 		glBindVertexArray(m_vertexArrayIndex);
-	}
-
-	if (!isBufferBoundToState(m_textureIndex, m_textureAttribute.targetBinding))
-	{
-		glBindTexture(m_textureAttribute.targetBinding, m_textureIndex);
 	}
 
 	draw();

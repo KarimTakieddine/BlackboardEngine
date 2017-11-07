@@ -28,18 +28,25 @@ public:
 
 	Triangle();
 
-	explicit Triangle(ShaderProgram const & program);
+	explicit Triangle
+	(
+		ShaderProgram const & program
+	);
 
-	explicit Triangle(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureBufferIndex, ShaderProgram const & program);
+	Triangle
+	(
+		Triangle const & other
+	);
 
-	Triangle(Triangle const & other);
-
-	void initialize() override;
+	void initializeTextured()		override;
+	void initializeWireframe()		override;
+	void initializeVertexColored()	override;
 
 protected:
 
-	void draw() override;
-
-	void update() override;
+	void update()				override;
+	void drawTextured()			override;
+	void drawWireframe()		override;
+	void drawVertexColored()	override;
 
 };

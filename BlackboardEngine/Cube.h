@@ -27,22 +27,10 @@ class Cube : public Mesh
 
 public:
 
-	enum RenderFlag
-	{
-		COLORED		= 0x00000000,
-		TEXTURED	= 0x00000001
-	};
-
 	Cube();
 
 	explicit Cube
 	(
-		ShaderProgram const & program
-	);
-
-	explicit Cube
-	(
-		RenderFlag flag,
 		ShaderProgram const & program
 	);
 
@@ -51,18 +39,14 @@ public:
 		Cube const & other
 	);
 
-	void setRenderFlag(RenderFlag flag);
-
-	void initialize() override;
+	void initializeTextured()		override;
+	//void initializeWireframe()		override;
+	void initializeVertexColored()	override;
 
 protected:
 
-	void draw() override;
-
-	void update() override;
-
-private:
-
-	unsigned char m_renderFlag;
+	void update()				override;
+	void drawTextured()			override;
+	void drawVertexColored()	override;
 
 };

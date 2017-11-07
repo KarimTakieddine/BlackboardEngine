@@ -28,6 +28,13 @@
 #include "TransformUniform.h"
 #include "VertexAttribute.h"
 
+enum RenderFlag
+{
+	VERTEX_COLORED	= 0x00000000,
+	TEXTURED		= 0x00000001,
+	WIREFRAME		= 0x00000002
+};
+
 class Mesh
 {
 
@@ -56,44 +63,119 @@ public:
 
 	Mesh();
 
-	explicit Mesh(ShaderProgram const & program);
+	explicit Mesh
+	(
+		ShaderProgram const & program
+	);
 
-	explicit Mesh(GLuint vertexArrayIndex, GLuint vertexBufferIndex, GLuint elementBufferIndex, GLuint textureIndex, ShaderProgram const & program);
+	explicit Mesh
+	(
+		RenderFlag				flag,
+		ShaderProgram const &	program
+	);
 
-	Mesh(Mesh const & other);
+	explicit Mesh
+	(
+		RenderFlag				flag,
+		GLuint					vertexArrayIndex,
+		GLuint					vertexBufferIndex,
+		GLuint					elementBufferIndex,
+		GLuint					textureIndex,
+		ShaderProgram const &	program
+	);
 
-	Mesh & operator=(Mesh const & other);
+	GLboolean loadTextureData
+	(
+		GLubyte const *				data,
+		TextureData const &			textureData,
+		TextureAttribute const &	textureAttribute
+	);
 
-	Mesh & copy(Mesh const & other);
+	GLboolean copyTextureData
+	(
+		Mesh const & other
+	);
 
-	Mesh & bindVertexData(BufferData<GLfloat> const & vertexData);
+	Mesh & copy
+	(
+		Mesh const & other
+	);
 
-	Mesh & bindElementData(BufferData<GLuint> const & elementData);
+	Mesh
+	(
+		Mesh const & other
+	);
 
-	GLboolean loadTextureData(GLubyte const * data, TextureData const & textureData, TextureAttribute const & textureAttribute);
+	Mesh & operator=
+	(
+		Mesh const & other
+	);
 
-	GLboolean loadTextureFile(GLchar const * filename, TextureAttribute const & textureAttribute);
+	Mesh & bindVertexData
+	(
+		BufferData<GLfloat> const & vertexData
+	);
 
-	GLboolean copyTextureData(Mesh const & other);
+	Mesh & bindElementData
+	(
+		BufferData<GLuint> const & elementData
+	);
 
-	GLboolean bindVertexAttribute(GLboolean normalized, VertexAttribute const & attribute) const;
+	GLboolean loadTextureFile
+	(
+		GLchar const *				filename,
+		TextureAttribute const &	textureAttribute
+	);
 
-	void initializeTransformUniform(GLchar const * name);
+	GLboolean bindVertexAttribute
+	(
+		GLboolean				normalized,
+		VertexAttribute const & attribute
+	) const;
+
+	void initialize();
+
+	void setRenderFlag
+	(
+		RenderFlag flag
+	);
+
+	void initializeTransformUniform
+	(
+		GLchar const * name
+	);
 
 	void render();
 
-	virtual void initialize() = 0;
+	virtual void initializeTextured()		= 0;
+	virtual void initializeWireframe()		= 0;
+	virtual void initializeVertexColored()	= 0;
 
 	virtual ~Mesh();
 
 protected:
 
-	virtual void draw() = 0;
-	virtual void update() = 0;
+	virtual void update()				= 0;
+	virtual void drawTextured()			= 0;
+	virtual void drawWireframe()		= 0;
+	virtual void drawVertexColored()	= 0;
 
-	TextureAttribute m_textureAttribute;
-	TextureData m_textureData;
-	ShaderProgram const * m_shaderProgram;
-	GLsizeiptr m_vertexBufferSize, m_elementBufferSize;
-	GLuint m_vertexArrayIndex, m_vertexBufferIndex, m_elementBufferIndex, m_textureIndex;
+	TextureAttribute		m_textureAttribute;
+	TextureData				m_textureData;
+
+	ShaderProgram const *	m_shaderProgram;
+
+	GLsizeiptr				m_vertexBufferSize,
+							m_elementBufferSize;
+
+	GLuint					m_vertexArrayIndex,
+							m_vertexBufferIndex,
+							m_elementBufferIndex,
+							m_textureIndex;
+
+	GLubyte					m_renderFlag;
+
+private:
+
+		void draw();
 };

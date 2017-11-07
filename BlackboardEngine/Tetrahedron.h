@@ -39,11 +39,11 @@ public:
 		Tetrahedron const & other
 	);
 
-	void initialize() override;
+	void initializeVertexColored()	override;
 
 protected:
 
-	void draw()		override;
-	void update()	override;
+	void update()					override;
+	void drawVertexColored()		override;
 
 };

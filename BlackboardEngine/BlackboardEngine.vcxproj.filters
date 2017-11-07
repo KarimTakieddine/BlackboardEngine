@@ -154,10 +154,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.shd">
+    <None Include="shaders\vertex.shd">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\vertex.shd">
+    <None Include="shaders\fragment_color.shd">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\fragment_texture.shd">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

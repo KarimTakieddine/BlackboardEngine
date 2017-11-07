@@ -76,39 +76,69 @@ int main()
 		return ERROR_SHD_COMPILE;
 	}
 
-	Shader fragmentShader(GL_FRAGMENT_SHADER);
-	fragmentShader.loadFile(".\\shaders\\fragment.shd");
+	Shader fragmentColorShader(GL_FRAGMENT_SHADER);
+	fragmentColorShader.loadFile(".\\shaders\\fragment_color.shd");
 
-	if (!fragmentShader.isCompiled())
+	if (!fragmentColorShader.isCompiled())
 	{
 		return ERROR_SHD_COMPILE;
 	}
 
-	ShaderProgram shaderProgram;
-	shaderProgram.attachShader(vertexShader).attachShader(fragmentShader).link();
+	Shader fragmentTextureShader(GL_FRAGMENT_SHADER);
+	fragmentTextureShader.loadFile(".\\shaders\\fragment_texture.shd");
 
-	if (!shaderProgram.isLinked())
+	if (!fragmentTextureShader.isCompiled())
+	{
+		return ERROR_SHD_COMPILE;
+	}
+
+	ShaderProgram colorShaderProgram;
+	ShaderProgram textureShaderProgram;
+
+	colorShaderProgram.attachShader(vertexShader).attachShader(fragmentColorShader).link();
+	textureShaderProgram.attachShader(vertexShader).attachShader(fragmentTextureShader).link();
+
+	if (!colorShaderProgram.isLinked())
 	{
 		return ERROR_SHD_PROGRAM_LINK;
 	}
 
-	shaderProgram.use();
+	if (!textureShaderProgram.isLinked())
+	{
+		return ERROR_SHD_PROGRAM_LINK;
+	}
 
-	Cube cube(Cube::TEXTURED, shaderProgram);
+	colorShaderProgram.use();
 
-	cube.initialize();
-	cube.loadTextureFile(".\\resources\\cat.png", TextureAttribute(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
-	cube.initializeTransformUniform("model");
+	Triangle triangle(colorShaderProgram);
+	triangle.initialize();
+	triangle.initializeTransformUniform("model");
 
-	Cube cubeCopy(cube);
-	cubeCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 8 * sizeof(GLfloat)), shaderProgram));
-	cubeCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
-	cubeCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 6 * sizeof(GLfloat), 8 * sizeof(GLfloat)), shaderProgram));
+	Triangle triangleCopy(colorShaderProgram);
+	triangleCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 6 * sizeof(GLfloat)), colorShaderProgram));
+	triangleCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat)), colorShaderProgram));
+	triangleCopy.initializeTransformUniform("model");
 
-	Tetrahedron tetrahedron(shaderProgram);
+	Triangle wireframeTriangle(colorShaderProgram);
+	wireframeTriangle.setRenderFlag(WIREFRAME);
+	wireframeTriangle.initializeTransformUniform("model");
 
-	tetrahedron.initialize();
-	tetrahedron.initializeTransformUniform("model");
+	textureShaderProgram.use();
+
+	Quad quad(textureShaderProgram);
+	quad.setRenderFlag(TEXTURED);
+	quad.loadTextureFile(".\\resources\\cat.png", TextureAttribute(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
+	quad.initializeTransformUniform("model");
+
+	Quad quadCopy(quad);
+	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 8 * sizeof(GLfloat)), textureShaderProgram));
+	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), textureShaderProgram));
+	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 6 * sizeof(GLfloat), 8 * sizeof(GLfloat)), textureShaderProgram));
+
+	colorShaderProgram.use();
+	Quad wireframeQuad(colorShaderProgram);
+	wireframeQuad.setRenderFlag(WIREFRAME);
+	wireframeQuad.initializeTransformUniform("model");
 
 	MAT4 view = glm::lookAt
 	(
@@ -117,45 +147,64 @@ int main()
 		glm::vec3(0.0f, 1.0f, 0.0f)
 	);
 
-	GLint viewUniformLocation = glGetUniformLocation(shaderProgram.getIndex(), "view");
-
-	glUniformMatrix4fv(viewUniformLocation, 1, GL_FALSE, glm::value_ptr(view));
-
 	MAT4 projection = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 1.0f, -10.0f);
 
-	GLint projectionUniformLocation = glGetUniformLocation(shaderProgram.getIndex(), "projection");
+	GLint viewUniformColorLocation = glGetUniformLocation(colorShaderProgram.getIndex(), "view");
+	glUniformMatrix4fv(viewUniformColorLocation, 1, GL_FALSE, glm::value_ptr(view));
+	GLint projectionUniformColorLocation = glGetUniformLocation(colorShaderProgram.getIndex(), "projection");
+	glUniformMatrix4fv(projectionUniformColorLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
-	glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, glm::value_ptr(projection));
+	textureShaderProgram.use();
+	GLint viewUniformTextureLocation = glGetUniformLocation(textureShaderProgram.getIndex(), "view");
+	glUniformMatrix4fv(viewUniformTextureLocation, 1, GL_FALSE, glm::value_ptr(view));
+	GLint projectionUniformTextureLocation = glGetUniformLocation(textureShaderProgram.getIndex(), "projection");
+	glUniformMatrix4fv(projectionUniformTextureLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	cube.transformUniform.transform.setScale(VEC3(0.5f, 0.5f, 0.5f));
-	cubeCopy.transformUniform.transform.setScale(VEC3(0.25f, 0.25f, 0.25f));
-	tetrahedron.transformUniform.transform.setScale(VEC3(0.75f, 0.75f, 0.75f));
-
-	float degrees = 0.0f;
-	float displacement = 0.0f;
+	float degrees		= 0.0f;
+	float displacement	= 0.0f;
+	
+	triangle.transformUniform.transform.setScale(VEC3(0.65f, 0.65f, 0.65f));
+	triangleCopy.transformUniform.transform.setScale(VEC3(0.35f, 0.35f, 0.35f));
+	wireframeTriangle.transformUniform.transform.setScale(VEC3(0.5f, 0.5f, 0.5f));
+	quad.transformUniform.transform.setScale(VEC3(0.75f, 0.75f, 0.75f));
+	quadCopy.transformUniform.transform.setScale(VEC3(0.5f, 0.5f, 0.5f));
+	wireframeQuad.transformUniform.transform.setScale(VEC3(0.35f, 0.35f, 0.35f));
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		degrees += 30.0f * Time::deltaTime;
-		displacement += 0.05f * Time::deltaTime;
+		degrees			+= 30.0f * Time::deltaTime;
+		displacement	+= 0.05f * Time::deltaTime;
 
-		cube.transformUniform.transform.setRotation(degrees, VEC3(1.0f, 1.0f, 0.0f));
-		cube.transformUniform.transform.setTranslation(VEC3(displacement, 0.0f, 0.0f));
-		cube.render();
+		triangle.transformUniform.transform.setRotation(-degrees, VEC3(0.0f, 0.0f, 1.0f));
+		triangle.transformUniform.transform.setTranslation(VEC3(displacement, displacement, 0.0f));
+		triangle.render();
 
-		cubeCopy.transformUniform.transform.setRotation(-degrees, VEC3(1.0f, 1.0f, 0.0f));
-		cubeCopy.transformUniform.transform.setTranslation(VEC3(-displacement, 0.0f, 0.0f));
-		cubeCopy.render();
+		triangleCopy.transformUniform.transform.setRotation(degrees, VEC3(0.0f, 0.0f, 1.0f));
+		triangleCopy.transformUniform.transform.setTranslation(VEC3(-displacement, -displacement, 0.0f));
+		triangleCopy.render();
 
-		tetrahedron.transformUniform.transform.setRotation(degrees, VEC3(0.0f, 1.0f, 0.0f));
-		tetrahedron.render();
+		wireframeTriangle.transformUniform.transform.setRotation(degrees, VEC3(0.0f, 0.0f, 1.0f));
+		wireframeTriangle.transformUniform.transform.setTranslation(VEC3(0.0f, displacement, 0.0f));
+		wireframeTriangle.render();
+
+		quad.transformUniform.transform.setRotation(-degrees, VEC3(1.0f, 1.0f, 0.0f));
+		quad.transformUniform.transform.setTranslation(VEC3(-displacement, 0.0f, 0.0f));
+		quad.render();
+		
+		quadCopy.transformUniform.transform.setRotation(degrees, VEC3(1.0f, 1.0f, 0.0f));
+		quadCopy.transformUniform.transform.setTranslation(VEC3(displacement, 0.0f, 0.0f));
+		quadCopy.render();
+
+		wireframeQuad.transformUniform.transform.setRotation(degrees, VEC3(1.0f, 1.0f, 0.0f));
+		wireframeQuad.transformUniform.transform.setTranslation(VEC3(-displacement, displacement, 0.0f));
+		wireframeQuad.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
