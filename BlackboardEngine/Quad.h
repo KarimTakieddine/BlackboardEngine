@@ -40,6 +40,7 @@ public:
 	);
 
 	void initializeTextured()		override;
+	void initializeTexturedLit()	override;
 	void initializeWireframe()		override;
 	void initializeVertexColored()	override;
 
@@ -47,6 +48,7 @@ protected:
 
 	void update()				override;
 	void drawTextured()			override;
+	void drawTexturedLit()		override;
 	void drawWireframe()		override;
 	void drawVertexColored()	override;
 

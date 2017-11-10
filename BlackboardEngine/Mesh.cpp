@@ -310,6 +310,10 @@ void Mesh::initialize()
 	{
 		initializeTextured();
 	}
+	else if ((m_renderFlag & TEXTURED_LIT) == TEXTURED_LIT)
+	{
+		initializeTexturedLit();
+	}
 	else if ((m_renderFlag & WIREFRAME) == WIREFRAME)
 	{
 		initializeWireframe();
@@ -353,6 +357,15 @@ void Mesh::draw()
 		}
 
 		drawTextured();
+	}
+	else if ((m_renderFlag & TEXTURED_LIT) == TEXTURED_LIT)
+	{
+		if (!isBufferBoundToState(m_textureIndex, m_textureAttribute.targetBinding))
+		{
+			glBindTexture(m_textureAttribute.targetBinding, m_textureIndex);
+		}
+
+		drawTexturedLit();
 	}
 	else if ((m_renderFlag & WIREFRAME) == WIREFRAME)
 	{

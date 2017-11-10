@@ -210,9 +210,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\fragment_phong_lighting.shd" />
     <None Include="shaders\fragment_texture.shd" />
     <None Include="shaders\fragment_color.shd" />
     <None Include="shaders\vertex.shd" />
+    <None Include="shaders\vertex_normal.shd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

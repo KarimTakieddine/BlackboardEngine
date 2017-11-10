@@ -63,79 +63,44 @@ int main()
 	glfwMakeContextCurrent(window);
 
 	glewExperimental = GL_TRUE;
+
 	if (glewInit() != GLEW_OK)
 	{
 		return ERROR_GLEW_INIT;
 	}
 
 	Shader vertexShader(GL_VERTEX_SHADER);
-	vertexShader.loadFile(".\\shaders\\vertex.shd");
+
+	vertexShader.loadFile(".\\shaders\\vertex_normal.shd");
 
 	if (!vertexShader.isCompiled())
 	{
 		return ERROR_SHD_COMPILE;
 	}
 
-	Shader fragmentColorShader(GL_FRAGMENT_SHADER);
-	fragmentColorShader.loadFile(".\\shaders\\fragment_color.shd");
+	Shader fragmentShader(GL_FRAGMENT_SHADER);
 
-	if (!fragmentColorShader.isCompiled())
+	fragmentShader.loadFile(".\\shaders\\fragment_phong_lighting.shd");
+
+	if (!fragmentShader.isCompiled())
 	{
 		return ERROR_SHD_COMPILE;
 	}
 
-	Shader fragmentTextureShader(GL_FRAGMENT_SHADER);
-	fragmentTextureShader.loadFile(".\\shaders\\fragment_texture.shd");
+	ShaderProgram shaderProgram;
+	shaderProgram.attachShader(vertexShader).attachShader(fragmentShader).link();
 
-	if (!fragmentTextureShader.isCompiled())
-	{
-		return ERROR_SHD_COMPILE;
-	}
-
-	ShaderProgram colorShaderProgram;
-
-	colorShaderProgram.attachShader(vertexShader).attachShader(fragmentColorShader).link();
-
-	if (!colorShaderProgram.isLinked())
+	if (!shaderProgram.isLinked())
 	{
 		return ERROR_SHD_PROGRAM_LINK;
 	}
 
-	ShaderProgram textureShaderProgram;
+	shaderProgram.use();
 
-	textureShaderProgram.attachShader(vertexShader).attachShader(fragmentTextureShader).link();
-
-	if (!textureShaderProgram.isLinked())
-	{
-		return ERROR_SHD_PROGRAM_LINK;
-	}
-
-	Triangle triangle(colorShaderProgram);
-	triangle.initialize();
-	triangle.initializeTransformUniform("model");
-
-	Triangle triangleCopy(colorShaderProgram);
-	triangleCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 6 * sizeof(GLfloat)), colorShaderProgram));
-	triangleCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 6 * sizeof(GLfloat)), colorShaderProgram));
-	triangleCopy.initializeTransformUniform("model");
-
-	Triangle wireframeTriangle(colorShaderProgram);
-	wireframeTriangle.setRenderFlag(WIREFRAME);
-	wireframeTriangle.initializeTransformUniform("model");
-
-	Quad quad(textureShaderProgram);
-	quad.setRenderFlag(TEXTURED);
-	quad.loadTextureFile(".\\resources\\cat.png", TextureAttribute(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
+	Quad quad(shaderProgram);
+	quad.setRenderFlag(TEXTURED_LIT);
+	quad.loadTextureFile(".\\resources\\pup.png", TextureAttribute(GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT, GL_TEXTURE_2D, VEC3(1.0f, 1.0f, 1.0f)));
 	quad.initializeTransformUniform("model");
-
-	Quad quadCopy(quad);
-	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 8 * sizeof(GLfloat)), textureShaderProgram));
-	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("color", BufferAttribute(GL_FLOAT, 3, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), textureShaderProgram));
-	quadCopy.bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 6 * sizeof(GLfloat), 8 * sizeof(GLfloat)), textureShaderProgram));
-
-	Quad wireframeQuad(colorShaderProgram);
-	wireframeQuad.setRenderFlag(WIREFRAME);
-	wireframeQuad.initializeTransformUniform("model");
 
 	MAT4 view = glm::lookAt
 	(
@@ -146,63 +111,61 @@ int main()
 
 	MAT4 projection = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 1.0f, -10.0f);
 
-	colorShaderProgram.use();
-	GLint viewUniformColorLocation = glGetUniformLocation(colorShaderProgram.getIndex(), "view");
+	GLint viewUniformColorLocation = glGetUniformLocation(shaderProgram.getIndex(), "view");
 	glUniformMatrix4fv(viewUniformColorLocation, 1, GL_FALSE, glm::value_ptr(view));
-	GLint projectionUniformColorLocation = glGetUniformLocation(colorShaderProgram.getIndex(), "projection");
+	GLint projectionUniformColorLocation = glGetUniformLocation(shaderProgram.getIndex(), "projection");
 	glUniformMatrix4fv(projectionUniformColorLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
-	textureShaderProgram.use();
-	GLint viewUniformTextureLocation = glGetUniformLocation(textureShaderProgram.getIndex(), "view");
-	glUniformMatrix4fv(viewUniformTextureLocation, 1, GL_FALSE, glm::value_ptr(view));
-	GLint projectionUniformTextureLocation = glGetUniformLocation(textureShaderProgram.getIndex(), "projection");
-	glUniformMatrix4fv(projectionUniformTextureLocation, 1, GL_FALSE, glm::value_ptr(projection));
+	VEC3 lightPosition(0.5, 0.5, 0.5);
+	VEC3 lightIntensity(1.0f, 1.0f, 1.0f);
+	float ambientCoefficient	= 0.15f;
+	float specularExponent		= 2.0f;
+	float lightAttenuation		= 0.2f;
+	float gamma					= 1.0f;
+
+	GLint lightUniformPositionLocation		= glGetUniformLocation(shaderProgram.getIndex(), "lightPosition");
+	GLint lightUniformIntensityLocation		= glGetUniformLocation(shaderProgram.getIndex(), "lightIntensity");
+	GLint lightAmbientCoefficientLocation	= glGetUniformLocation(shaderProgram.getIndex(), "ambientCoefficient");
+	GLint specularExponentLocation			= glGetUniformLocation(shaderProgram.getIndex(), "specularExponent");
+	GLint lightAttenuationLocation			= glGetUniformLocation(shaderProgram.getIndex(), "lightAttenuation");
+	GLint gammaCorrectionLocation			= glGetUniformLocation(shaderProgram.getIndex(), "gamma");
+
+	glUniform1f(lightAmbientCoefficientLocation, ambientCoefficient);
+	glUniform1f(specularExponentLocation, specularExponent);
+	glUniform1f(lightAttenuationLocation, lightAttenuation);
+	glUniform1f(gammaCorrectionLocation, gamma);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	float degrees		= 0.0f;
-	float displacement	= 0.0f;
-	
-	triangle.transformUniform.transform.setScale(VEC3(0.65f, 0.65f, 0.65f));
-	triangleCopy.transformUniform.transform.setScale(VEC3(0.35f, 0.35f, 0.35f));
-	wireframeTriangle.transformUniform.transform.setScale(VEC3(0.5f, 0.5f, 0.5f));
-	quad.transformUniform.transform.setScale(VEC3(0.75f, 0.75f, 0.75f));
-	quadCopy.transformUniform.transform.setScale(VEC3(0.5f, 0.5f, 0.5f));
-	wireframeQuad.transformUniform.transform.setScale(VEC3(0.35f, 0.35f, 0.35f));
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		degrees			+= 30.0f * Time::deltaTime;
-		displacement	+= 0.05f * Time::deltaTime;
+		if (glfwGetKey(window, GLFW_KEY_LEFT))
+		{
+			lightPosition -= VEC3(3.0f * Time::deltaTime, 0.0f, 0.0f);
+		}
+		else if (glfwGetKey(window, GLFW_KEY_RIGHT))
+		{
+			lightPosition += VEC3(3.0f * Time::deltaTime, 0.0f, 0.0f);
+		}
 
-		triangle.transformUniform.transform.setRotation(-degrees, VEC3(0.0f, 0.0f, 1.0f));
-		triangle.transformUniform.transform.setTranslation(VEC3(displacement, displacement, 0.0f));
-		triangle.render();
+		if (glfwGetKey(window, GLFW_KEY_UP))
+		{
+			lightPosition += VEC3(0.0f, 3.0f * Time::deltaTime, 0.0f);
+		}
+		else if (glfwGetKey(window, GLFW_KEY_DOWN))
+		{
+			lightPosition -= VEC3(0.0f, 3.0f * Time::deltaTime, 0.0f);
+		}
 
-		triangleCopy.transformUniform.transform.setRotation(degrees, VEC3(0.0f, 0.0f, 1.0f));
-		triangleCopy.transformUniform.transform.setTranslation(VEC3(-displacement, -displacement, 0.0f));
-		triangleCopy.render();
+		glUniform3fv(lightUniformPositionLocation, 1, glm::value_ptr(lightPosition));
+		glUniform3fv(lightUniformIntensityLocation, 1, glm::value_ptr(lightIntensity));
 
-		wireframeTriangle.transformUniform.transform.setRotation(degrees, VEC3(0.0f, 0.0f, 1.0f));
-		wireframeTriangle.transformUniform.transform.setTranslation(VEC3(0.0f, displacement, 0.0f));
-		wireframeTriangle.render();
-
-		quad.transformUniform.transform.setRotation(-degrees, VEC3(1.0f, 1.0f, 0.0f));
-		quad.transformUniform.transform.setTranslation(VEC3(-displacement, 0.0f, 0.0f));
 		quad.render();
-		
-		quadCopy.transformUniform.transform.setRotation(degrees, VEC3(1.0f, 1.0f, 0.0f));
-		quadCopy.transformUniform.transform.setTranslation(VEC3(displacement, 0.0f, 0.0f));
-		quadCopy.render();
-
-		wireframeQuad.transformUniform.transform.setRotation(degrees, VEC3(1.0f, 1.0f, 0.0f));
-		wireframeQuad.transformUniform.transform.setTranslation(VEC3(-displacement, displacement, 0.0f));
-		wireframeQuad.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

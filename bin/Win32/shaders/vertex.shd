@@ -13,8 +13,8 @@ out vec2 samplerCoordinates;
 
 void main()
 {
-	vertexColor = color;
-	samplerCoordinates = textureCoordinates;
+	vertexColor			= color;
+	samplerCoordinates	= textureCoordinates;
 	
 	gl_Position = projection * view * model * vec4(position, 1.0);
 }

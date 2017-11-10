@@ -1,0 +1,49 @@
+#version 440 core
+
+uniform vec3 lightPosition;
+uniform vec3 lightIntensity;
+uniform float ambientCoefficient;
+uniform float specularExponent;
+uniform float lightAttenuation;
+uniform float gamma;
+
+uniform mat4 model;
+uniform sampler2D sampler;
+uniform vec3 specularColor;
+
+in vec3 vertex;
+in vec2 samplerCoordinates;
+in vec3 vertexNormals;
+
+out vec4 fragmentColor;
+
+void main()
+{
+	mat3 normalMatrix			= transpose(inverse(mat3(model)));
+	vec3 normal					= normalize(normalMatrix * vertexNormals);
+
+	vec3 fragmentPosition		= vec3(model * vec4(vertex, 1.0));
+	vec3 surfaceToLight			= lightPosition - fragmentPosition;
+
+	float diffuseCoefficient	= dot(normal, surfaceToLight) / (length(surfaceToLight) * length(normal));
+	diffuseCoefficient			= clamp(diffuseCoefficient, 0.0, 1.0);
+	vec4 surfaceColor			= texture(sampler, samplerCoordinates);
+	vec3 diffuse				= diffuseCoefficient * surfaceColor.rgb * lightIntensity;
+	vec3 ambient				= ambientCoefficient * surfaceColor.rgb * lightIntensity;
+
+	vec3 incidenceVector		= -surfaceToLight;
+	vec3 reflectionVector		= reflect(incidenceVector, vertexNormals);
+	vec3 cameraPosition			= vec3(0.0, 0.0, 0.0);
+	vec3 surfaceToCamera		= normalize(cameraPosition - fragmentPosition);
+	float cosAngle				= max(0.0, dot(surfaceToCamera, reflectionVector));
+	float specularCoefficient	= pow(cosAngle, specularExponent);
+	vec3 specular				= specularCoefficient * specularColor * lightIntensity;
+
+	float distanceToLight		= length(lightPosition - fragmentPosition);
+	float attenuation			= 1.0 / (1.0 + lightAttenuation * pow(distanceToLight, 2));
+
+	vec3 linearColor			= ambient + attenuation * (diffuse + specular);
+	vec3 gammaCorrection		= vec3(gamma);
+
+	fragmentColor				= vec4(pow(linearColor, gammaCorrection), surfaceColor.a);
+}

@@ -66,6 +66,31 @@ void Quad::initializeTextured()
 	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, elements, sizeof(elements)));
 }
 
+void Quad::initializeTexturedLit()
+{
+	GLfloat const vertices[32] = 
+	{
+		-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	bindVertexData(BufferData<GLfloat>(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices, sizeof(vertices)));
+
+	bindVertexAttribute(GL_FALSE, VertexAttribute("position", BufferAttribute(GL_FLOAT, 3, 0, 8 * sizeof(GLfloat)), *m_shaderProgram));
+	bindVertexAttribute(GL_FALSE, VertexAttribute("textureCoordinates", BufferAttribute(GL_FLOAT, 2, 3 * sizeof(GLfloat), 8 * sizeof(GLfloat)), *m_shaderProgram));
+	bindVertexAttribute(GL_FALSE, VertexAttribute("normals", BufferAttribute(GL_FLOAT, 3, 5 * sizeof(GLfloat), 8 * sizeof(GLfloat)), *m_shaderProgram));
+
+	GLuint const elements[6] =
+	{
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	bindElementData(BufferData<GLuint>(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, elements, sizeof(elements)));
+}
+
 void Quad::initializeWireframe()
 {
 	GLfloat const vertices[24] =
@@ -127,6 +152,11 @@ void Quad::update()
 }
 
 void Quad::drawTextured()
+{
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+}
+
+void Quad::drawTexturedLit()
 {
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }

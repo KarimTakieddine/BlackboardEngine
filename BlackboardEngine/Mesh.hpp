@@ -32,7 +32,8 @@ enum RenderFlag
 {
 	VERTEX_COLORED	= 0x00000000,
 	TEXTURED		= 0x00000001,
-	WIREFRAME		= 0x00000002
+	TEXTURED_LIT	= 0x00000002,
+	WIREFRAME		= 0x00000004,
 };
 
 class Mesh
@@ -148,6 +149,7 @@ public:
 	void render();
 
 	virtual void initializeTextured()		= 0;
+	virtual void initializeTexturedLit()	= 0;
 	virtual void initializeWireframe()		= 0;
 	virtual void initializeVertexColored()	= 0;
 
@@ -157,6 +159,7 @@ protected:
 
 	virtual void update()				= 0;
 	virtual void drawTextured()			= 0;
+	virtual void drawTexturedLit()		= 0;
 	virtual void drawWireframe()		= 0;
 	virtual void drawVertexColored()	= 0;
 
