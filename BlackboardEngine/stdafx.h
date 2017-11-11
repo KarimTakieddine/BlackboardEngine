@@ -26,6 +26,10 @@
 #include <map>
 #include <vector>
 
+#include "OpenAL\al.h"
+#include "OpenAL\alc.h"
+#include "OpenAL\CWaves.h"
+
 #include "GLEW\glew.h"
 #include "GLFW\glfw3.h"
 
@@ -40,6 +44,6 @@
 typedef glm::vec2 VEC2;
 typedef glm::vec3 VEC3;
 typedef glm::vec4 VEC4;
-typedef glm::mat2 MAT2;
-typedef glm::mat3 MAT3;
-typedef glm::mat4 MAT4;
+typedef glm::mat2 MAT22;
+typedef glm::mat3 MAT33;
+typedef glm::mat4 MAT44;

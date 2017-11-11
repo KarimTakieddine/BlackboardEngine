@@ -44,6 +44,6 @@ private:
 
 	void recomputeData();
 
-	MAT4 m_translation, m_rotation, m_scale, m_data;
+	MAT44 m_translation, m_rotation, m_scale, m_data;
 
 };
