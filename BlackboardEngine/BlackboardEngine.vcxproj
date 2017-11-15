@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -162,7 +162,9 @@
     <ClInclude Include="AudioSource.h" />
     <ClInclude Include="BufferAttribute.h" />
     <ClInclude Include="BufferData.hpp" />
+    <ClInclude Include="BufferObject.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="GLInfo.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="RGBColor.h" />
     <ClInclude Include="File.h" />
@@ -188,10 +190,12 @@
     <ClCompile Include="AudioDevice.cpp" />
     <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="BufferAttribute.cpp" />
+    <ClCompile Include="BufferObject.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="CWaves.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="BlackboardEngine.cpp" />
+    <ClCompile Include="GLInfo.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />

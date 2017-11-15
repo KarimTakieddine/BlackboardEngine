@@ -26,6 +26,10 @@
 #include "Triangle.h"
 #include "Time.h"
 
+//Refactor
+
+#include "BufferObject.h"
+
 enum ErrorCode
 {
 	ERROR_NONE,
@@ -70,6 +74,10 @@ int main()
 	{
 		return ERROR_GLEW_INIT;
 	}
+
+	BufferObject bufferObject(GL_ARRAY_BUFFER, 1);
+	bufferObject.lazyBind();
+	bufferObject.lazyBind();
 
 	AudioDevice audioDevice;
 
